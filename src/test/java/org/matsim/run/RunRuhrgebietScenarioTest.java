@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.testcases.MatsimTestUtils;
@@ -48,6 +49,12 @@ public class RunRuhrgebietScenarioTest {
 			config.controler().setLastIteration(0);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+			config.controler().setWritePlansUntilIteration( 0 );
+			config.controler().setWritePlansInterval( 0 );
+			config.qsim().setNumberOfThreads( 1 );
+			config.global().setNumberOfThreads( 1 );
+			
+			Scenario scenario = ruhrgebietScenarioRunner.prepareScenario();
 			
 			ruhrgebietScenarioRunner.run();
 			
