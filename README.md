@@ -1,4 +1,4 @@
-# The MATSim Open Ruhrgebiet Scenario
+# The MATSim Open Ruhrgebiet (Ruhr area, Germany) Scenario
 
 ### About this project
 
@@ -12,11 +12,11 @@ Handling of large files within git is not without problems (git lfs files are no
 
 ### Simple things (without installing/running MATSim)
 
-##### Movies
+##### Movies (TODO)
 
 1. Go to https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/
 1. Inside there, look for an `output-*` directory that you find interesting and go into that directory.
-1. TODO: Inside there, look for `movie-*` files.  You can't view them directly, but you there are various ways to download them, and you can view them then.  Try that.
+1. Inside there, look for `movie-*` files.  You can't view them directly, but you there are various ways to download them, and you can view them then.  Try that.
 
 ##### Run VIA on output files
 
@@ -56,7 +56,7 @@ This will update your repository to the newest version.
 ### Run the scenario
 (Requires either cloning or downloading the repository.)
 
-##### ... using a runnable jar file
+##### ... using a runnable jar file (TODO)
 1. There should be a file directly in the `matsim-ruhrgebiet` directory with name approximately as `matsim-ruhrgebiet-1.0-jar-with-dependencies.jar`.
 1. Double-click on that file (in a file system browser).  A simple GUI should open.
 1. In the GUI, click on the "Choose" button for configuration file.  Navigate to one of the `scenario` directories and load one of the configuration files.
