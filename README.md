@@ -53,7 +53,7 @@ This will result in a new `matsim-ruhrgebiet` directory.  Memorize where you hav
 
 This will update your repository to the newest version.
 
-### Run the MATSim Berlin scenario
+### Run the scenario
 (Requires either cloning or downloading the repository.)
 
 ##### ... using a runnable jar file
