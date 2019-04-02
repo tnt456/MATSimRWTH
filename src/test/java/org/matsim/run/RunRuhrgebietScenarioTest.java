@@ -35,7 +35,7 @@ public class RunRuhrgebietScenarioTest {
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
 	@Test
-	public final void test() {
+	public final void test1() {
 		
 		String configFileName = "scenarios/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-1pct.config.xml";
 
