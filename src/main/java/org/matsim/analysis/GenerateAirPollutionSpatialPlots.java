@@ -70,14 +70,14 @@ public class GenerateAirPollutionSpatialPlots {
 			throw new RuntimeException("Please set the root directory. Aborting...");
 		}
         
-        final double gridSize = 500.;
+        final double gridSize = 100.;
         final double smoothingRadius = 500.;
-        final double countScaleFactor = 10.;
+        final double scaleFactor = 100.;
         
     	final String runDir = rootDirectory + "runs-svn/nemo/wissenschaftsforum2019/run0_bc-ohne-RSV/output/";
     	final String runId = "run0_bc-ohne-RSV";
 
-        GenerateAirPollutionSpatialPlots plots = new GenerateAirPollutionSpatialPlots(gridSize, smoothingRadius, countScaleFactor);
+        GenerateAirPollutionSpatialPlots plots = new GenerateAirPollutionSpatialPlots(gridSize, smoothingRadius, scaleFactor);
         
         final String configFile = runDir + runId + ".output_config.xml";
 		final String events = runDir + runId + ".500.emission.events.offline.xml.gz";
