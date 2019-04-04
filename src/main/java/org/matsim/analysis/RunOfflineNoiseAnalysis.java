@@ -37,8 +37,11 @@ import org.matsim.core.scenario.ScenarioUtils;
 public class RunOfflineNoiseAnalysis {
 	private static final Logger log = Logger.getLogger(RunOfflineNoiseAnalysis.class);
 	
-	final static String runDirectory = "runs-svn/nemo/wissenschaftsforum2019/run1_bc-mit-RSV/output/";	
-	final static String runId = "run1_bc-mit-RSV";
+	final static String runDirectory = "runs-svn/nemo/wissenschaftsforum2019/run0_bc-ohne-RSV/output/";	
+	final static String runId = "run0_bc-ohne-RSV";
+	
+//	final static String runDirectory = "runs-svn/nemo/wissenschaftsforum2019/run1_bc-mit-RSV/output/";	
+//	final static String runId = "run1_bc-mit-RSV";
 	
 	private static String outputDirectory;
 	private static double receiverPointGap;
