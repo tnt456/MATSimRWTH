@@ -76,6 +76,26 @@
 			<!--(careful, this is not matsim, thus not ${matsim.version})-->
         </dependency>
         
+        <dependency>
+        	<groupId>org.matsim.contrib</groupId>
+        	<artifactId>emissions</artifactId>
+        	<version>${matsim.version}</version>
+        	<scope>compile</scope>
+      	</dependency>
+      	
+      	<dependency>
+        	<groupId>org.matsim.contrib</groupId>
+        	<artifactId>noise</artifactId>
+        	<version>${matsim.version}</version>
+        	<scope>compile</scope>
+      	</dependency>
+      	
+      	<dependency>
+		  	<groupId>org.apache.commons</groupId>
+		  	<artifactId>commons-csv</artifactId>
+		  	<version>1.6</version>
+	  	</dependency>
+        
 	</dependencies>
 
 	<build>
