@@ -111,8 +111,8 @@ public class RunOfflineNoiseAnalysis {
 		noiseParameters.setTunnelLinkIdFile(tunnelLinkIdFile);
 		noiseParameters.setTimeBinSizeNoiseComputation(timeBinSize);
 		
-		String networkModesToIgnore = "bike";
-		noiseParameters.setNetworkModesToIgnore(networkModesToIgnore);
+//		String networkModesToIgnore = "bike";
+//		noiseParameters.setNetworkModesToIgnore(networkModesToIgnore);
 		
 		Scenario scenario = ScenarioUtils.loadScenario(config);
 		NoiseOfflineCalculation noiseCalculation = new NoiseOfflineCalculation(scenario, outputDirectory);
