@@ -77,6 +77,30 @@ public class RunRuhrgebietScenarioTest {
 		}
 	}
 	
+	@Test
+	public final void test0() {
+		
+		String configFileName = "scenarios/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-1pct.config.xml";
+
+		try {
+			
+			RunRuhrgebietScenario runner0 = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, configFileName });
+			runner0.prepareConfig();
+			
+			RunRuhrgebietScenario runner1 = new RunRuhrgebietScenario(new String[]{ "--config-path", configFileName});
+			runner1.prepareConfig();
+
+			RunRuhrgebietScenario runner2 = new RunRuhrgebietScenario(new String[]{ configFileName });
+			runner2.prepareConfig();
+
+		} catch ( Exception ee ) {
+			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
+
+			// if one catches an exception, then one needs to explicitly fail the test:
+			Assert.fail();
+		}
+	}
+	
 	private static void downsample( final Map<Id<Person>, ? extends Person> map, final double sample ) {
 		final Random rnd = MatsimRandom.getLocalInstance();
 		log.warn( "map size before=" + map.size() ) ;
