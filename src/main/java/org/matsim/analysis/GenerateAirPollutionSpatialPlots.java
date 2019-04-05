@@ -74,8 +74,11 @@ public class GenerateAirPollutionSpatialPlots {
         final double smoothingRadius = 500.;
         final double scaleFactor = 100.;
         
-    	final String runDir = rootDirectory + "runs-svn/nemo/wissenschaftsforum2019/run1_bc-mit-RSV/output/";
-    	final String runId = "run1_bc-mit-RSV";
+        final String runDir = rootDirectory + "runs-svn/nemo/wissenschaftsforum2019/run0_bc-ohne-RSV/output/";
+    	final String runId = "run0_bc-ohne-RSV";
+        
+//    	final String runDir = rootDirectory + "runs-svn/nemo/wissenschaftsforum2019/run1_bc-mit-RSV/output/";
+//    	final String runId = "run1_bc-mit-RSV";
 
         GenerateAirPollutionSpatialPlots plots = new GenerateAirPollutionSpatialPlots(gridSize, smoothingRadius, scaleFactor);
         
