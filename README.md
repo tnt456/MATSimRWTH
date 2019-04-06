@@ -1,6 +1,6 @@
-![Ruhrgebiet MATSim network and agents)](scenarios/ruhrgebiet-v1.0-1pct/visualization_network-agents.png "Ruhrgebiet MATSim network and agents")
-
 # The MATSim Open Ruhrgebiet (Ruhr area, Germany) Scenario
+
+![Ruhrgebiet MATSim network and agents)](scenarios/ruhrgebiet-v1.0-1pct/visualization_network-agents.png "Ruhrgebiet MATSim network and agents")
 
 ### About this project
 
