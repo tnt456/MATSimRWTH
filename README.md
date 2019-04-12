@@ -75,9 +75,7 @@ This will update your repository to the newest version.
 
 ### More information
 
-For more information about the scenario generation, see here: https://svn.vsp.tu-berlin.de/repos/public-svn/publications/vspwp/2018/18-08/
-
-For more information about MATSim, see here: https://www.matsim.org/.
+For more information about the scenario generation, see here: https://svn.vsp.tu-berlin.de/repos/public-svn/publications/vspwp/2018/18-08/. For more information about MATSim, see here: https://www.matsim.org/.
 
 ### Acknowledgements
 
