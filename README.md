@@ -81,4 +81,4 @@ For more information about MATSim, see here: https://www.matsim.org/.
 
 ### Acknowledgements
 
-The generation of the MATSim Open Ruhrgebiet Scenario was made possible by Stiftung Mercator (https://www.stiftung-mercator.de/de/) within the project Neue Emscher Mobilität (NEMO, https://www.nemo-ruhr.de).
+The generation of the MATSim Open Ruhrgebiet Scenario was made possible by Stiftung Mercator (https://www.stiftung-mercator.de/) within the project Neue Emscher Mobilität (NEMO, https://www.nemo-ruhr.de).
