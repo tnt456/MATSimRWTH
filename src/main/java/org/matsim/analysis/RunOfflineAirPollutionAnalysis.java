@@ -44,14 +44,8 @@ import org.matsim.vehicles.VehicleType;
 
 public class RunOfflineAirPollutionAnalysis {
 	
-//	final static String runDirectory = "runs-svn/nemo/wissenschaftsforum2019/run0_bc-ohne-RSV/output/";	
-//	final static String runId = "run0_bc-ohne-RSV";
-	
-//	final static String runDirectory = "runs-svn/nemo/wissenschaftsforum2019/run1_bc-mit-RSV/output/";	
-//	final static String runId = "run1_bc-mit-RSV";
-	
-	final static String runDirectory = "runs-svn/nemo/wissenschaftsforum2019/run3_gesundeStadt-mit-RSV/output/";	
-	final static String runId = "run3_gesundeStadt-mit-RSV";
+	final static String runDirectory = "path-to-run-directory/";	
+	final static String runId = "run-id";
 
 	final static String hbefaFileCold = "shared-svn/projects/detailedEval/matsim-input-files/hbefa-files/v3.2/EFA_ColdStart_vehcat_2005average.txt";
 	final static String hbefaFileWarm = "shared-svn/projects/detailedEval/matsim-input-files/hbefa-files/v3.2/EFA_HOT_vehcat_2005average.txt";
