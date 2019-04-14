@@ -57,7 +57,7 @@ This will update your repository to the newest version.
 ### Run the scenario
 (Requires either cloning or downloading the repository.)
 
-##### ... using a runnable jar file (available once we have a first release)
+##### ... using a runnable jar file
 1. There should be a file directly in the `matsim-ruhrgebiet` directory with name approximately as `matsim-ruhrgebiet-1.0-jar-with-dependencies.jar`.
 1. Double-click on that file (in a file system browser).  A simple GUI should open.
 1. In the GUI, click on the "Choose" button for configuration file.  Navigate to one of the `scenario` directories and load one of the configuration files.
