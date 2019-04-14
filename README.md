@@ -57,7 +57,7 @@ This will update your repository to the newest version.
 ### Run the scenario
 (Requires either cloning or downloading the repository.)
 
-##### ... using a runnable jar file (available once we have a first release)
+##### ... using a runnable jar file (only available for releases)
 1. There should be a file directly in the `matsim-ruhrgebiet` directory with name approximately as `matsim-ruhrgebiet-1.0-jar-with-dependencies.jar`.
 1. Double-click on that file (in a file system browser).  A simple GUI should open.
 1. In the GUI, click on the "Choose" button for configuration file.  Navigate to one of the `scenario` directories and load one of the configuration files.
@@ -75,7 +75,9 @@ This will update your repository to the newest version.
 
 ### More information
 
-For more information about the scenario generation, see here: https://svn.vsp.tu-berlin.de/repos/public-svn/publications/vspwp/2018/18-08/. For more information about MATSim, see here: https://www.matsim.org/.
+For more information about the scenario generation and calibration, see here: https://svn.vsp.tu-berlin.de/repos/public-svn/publications/vspwp/2018/18-08/ and here: https://svn.vsp.tu-berlin.de/repos/public-svn/publications/vspwp/2019/19-10/.
+
+For more information about MATSim, see here: https://www.matsim.org/.
 
 ### Acknowledgements
 
