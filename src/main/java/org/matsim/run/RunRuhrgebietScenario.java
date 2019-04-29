@@ -22,6 +22,7 @@ package org.matsim.run;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
+import org.matsim.analysis.ScoreStats;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -229,5 +230,10 @@ public class RunRuhrgebietScenario {
             config.planCalcScore().addActivityParams(params);
         }
     }
+    // add a getScore method
+	public ScoreStats getScoreStats() {
+		return controler.getScoreStats();
+	}
+
 
 }
