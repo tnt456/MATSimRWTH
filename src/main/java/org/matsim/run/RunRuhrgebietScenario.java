@@ -183,6 +183,12 @@ public class RunRuhrgebietScenario {
         config.plansCalcRoute().setInsertingAccessEgressWalk(true);
         config.qsim().setUsingTravelTimeCheckInTeleportation(true);
         config.subtourModeChoice().setProbaForRandomSingleTripMode(0.5);
+        
+        // delete some default mode settings
+		config.plansCalcRoute().removeModeRoutingParams(TransportMode.ride);
+		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt);
+		config.plansCalcRoute().removeModeRoutingParams(TransportMode.bike);
+		config.plansCalcRoute().removeModeRoutingParams("undefined");
 
         final long minDuration = 600;
         final long maxDuration = 3600 * 27;
@@ -193,6 +199,8 @@ public class RunRuhrgebietScenario {
         addTypicalDurations("leisure", minDuration, maxDuration, difference);
         addTypicalDurations("shopping", minDuration, maxDuration, difference);
         addTypicalDurations("other", minDuration, maxDuration, difference);
+        
+        // TODO: for next release: define opening and closing times! ihab April'19
 
         if (cmd != null) {
 			try {
