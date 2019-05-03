@@ -157,10 +157,10 @@ public class RunRuhrgebietScenarioTest {
 			Assert.assertEquals(1474.0, legAnalyzer.getPerson2legInfo().get(person2).get(1).getTravelTime(),EPSILON);
 
 			// ride
-			Assert.assertEquals(537.0, legAnalyzer.getPerson2legInfo().get(person2).get(4).getTravelTime(),EPSILON);
+			Assert.assertEquals(537.0, legAnalyzer.getPerson2legInfo().get(person2).get(7).getTravelTime(),EPSILON);
 			
 			// walk
-			Assert.assertEquals(1287.0,legAnalyzer.getPerson2legInfo().get(person2).get(6).getTravelTime(),EPSILON);
+			Assert.assertEquals(1287.0,legAnalyzer.getPerson2legInfo().get(person2).get(9).getTravelTime(),EPSILON);
 			
 			// Scores
 //			Assert.assertEquals(1.2746698932141114, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
