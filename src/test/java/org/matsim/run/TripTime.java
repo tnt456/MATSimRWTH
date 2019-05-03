@@ -25,10 +25,29 @@ package org.matsim.run;
  */
 class TripTime{
 
-    double beginTime;
-    double endTime;
-    double tripTime;
-
-    TripTime(){}
+    private double beginTime;
+    private double endTime;
+    private double tripTime;
+    
+	public double getBeginTime() {
+		return beginTime;
+	}
+	public void setBeginTime(double beginTime) {
+		this.beginTime = beginTime;
+	}
+	public double getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(double endTime) {
+		this.endTime = endTime;
+	}
+	public double getTripTime() {
+		return tripTime;
+	}
+	public void setTripTime(double tripTime) {
+		this.tripTime = tripTime;
+	}
+    
+    
 
 }

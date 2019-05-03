@@ -19,53 +19,49 @@
 
 package org.matsim.run;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.PersonArrivalEvent;
 import org.matsim.api.core.v01.events.PersonDepartureEvent;
 import org.matsim.api.core.v01.events.handler.PersonArrivalEventHandler;
 import org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler;
-import org.matsim.api.core.v01.network.Network;
-
-
-import java.util.HashMap;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import org.matsim.api.core.v01.population.Person;
 
 /**
  * @author zmeng
  *
  */
-class SpecificTripTime2ModeEventHandler implements PersonDepartureEventHandler, PersonArrivalEventHandler {
+class PersonsFirstLegTTAnalyzer implements PersonDepartureEventHandler, PersonArrivalEventHandler {
 
-    private final Network network;
-    List<String> personList;
-    Map<String,  Map<String, TripTime>> allTrips2Person = new HashMap<>();
+    private final List<Id<Person>> personList;
+    private final List<String> helpModes;
+    private final Map<Id<Person>,  Map<String, TripTime>> person2mode2legTime = new HashMap<>();
 
-    List<String> helpMode = new LinkedList<>();
+    PersonsFirstLegTTAnalyzer(List<Id<Person>> personList, List<String> legModesToIgnore) {
 
-
-    SpecificTripTime2ModeEventHandler(Network network, List<String> personList) {
-
-        this.network = network;
         this.personList = personList;
-        helpMode.add("transit_walk");
-        helpMode.add("access_walk");
-        helpMode.add("egress_walk");
+        this.helpModes = legModesToIgnore;
 
-        for(int i=0;i<this.personList.size();i++){
-            this.allTrips2Person.put(personList.get(i), new HashMap<String, TripTime>());
+        for(int i=0; i<this.personList.size(); i++){
+            this.person2mode2legTime.put(personList.get(i), new HashMap<String, TripTime>());
         }
-
     }
 
     @Override
+	public void reset(int iteration) {
+    	this.getPerson2Mode2LegTime().clear();
+    }
+
+	@Override
     public void handleEvent(PersonDepartureEvent event){
 
-        if (allTrips2Person.containsKey(event.getPersonId().toString()) && (!helpMode.contains(event.getLegMode()))){
-            if (!allTrips2Person.get(event.getPersonId().toString()).containsKey(event.getLegMode())) {
-                allTrips2Person.get(event.getPersonId().toString()).put(event.getLegMode(), new TripTime());
-                allTrips2Person.get(event.getPersonId().toString()).get(event.getLegMode()).beginTime = event.getTime();
+        if (person2mode2legTime.containsKey(event.getPersonId()) && (!helpModes.contains(event.getLegMode()))){
+            if (!person2mode2legTime.get(event.getPersonId()).containsKey(event.getLegMode())) {
+                person2mode2legTime.get(event.getPersonId()).put(event.getLegMode(), new TripTime());
+                person2mode2legTime.get(event.getPersonId()).get(event.getLegMode()).setBeginTime(event.getTime());
             }
         }
     }
@@ -73,12 +69,16 @@ class SpecificTripTime2ModeEventHandler implements PersonDepartureEventHandler, 
 
     @Override
     public void handleEvent(PersonArrivalEvent event) {
-        if(allTrips2Person.containsKey(event.getPersonId().toString()) && (!helpMode.contains(event.getLegMode()))){
-            if(allTrips2Person.get(event.getPersonId().toString()).get(event.getLegMode()).endTime == 0){
-                allTrips2Person.get(event.getPersonId().toString()).get(event.getLegMode()).endTime = event.getTime();
-                allTrips2Person.get(event.getPersonId().toString()).get(event.getLegMode()).tripTime = event.getTime()-allTrips2Person.get(event.getPersonId().toString()).get(event.getLegMode()).beginTime;
+        if(person2mode2legTime.containsKey(event.getPersonId()) && (!helpModes.contains(event.getLegMode()))){
+            if(person2mode2legTime.get(event.getPersonId()).get(event.getLegMode()).getEndTime() == 0.){
+                person2mode2legTime.get(event.getPersonId()).get(event.getLegMode()).setEndTime(event.getTime());
+                person2mode2legTime.get(event.getPersonId()).get(event.getLegMode()).setTripTime(event.getTime() - person2mode2legTime.get(event.getPersonId()).get(event.getLegMode()).getBeginTime());
             }
         }
     }
+
+	public Map<Id<Person>, Map<String, TripTime>> getPerson2Mode2LegTime() {
+		return person2mode2legTime;
+	}
 
 }

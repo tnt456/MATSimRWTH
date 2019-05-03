@@ -18,11 +18,17 @@
  * *********************************************************************** */
 package org.matsim.run;
 
+import static org.matsim.testcases.MatsimTestUtils.EPSILON;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -31,19 +37,12 @@ import org.junit.Test;
 import org.matsim.analysis.ScoreStatsControlerListener;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Person;
-import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
+import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
-import org.matsim.core.events.EventsUtils;
-import org.matsim.core.events.MatsimEventsReader;
 import org.matsim.core.gbl.MatsimRandom;
-import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.testcases.MatsimTestUtils;
-
-import static org.matsim.testcases.MatsimTestUtils.EPSILON;
 
 /**
  * @author nagel zmeng
@@ -88,7 +87,7 @@ public class RunRuhrgebietScenarioTest {
 			RunRuhrgebietScenario ruhrgebietScenarioRunner = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, configFileName });
 
 			Config config = ruhrgebietScenarioRunner.prepareConfig();
-			config.controler().setWriteEventsInterval(1); // change the 0 to 1, otherwise, there will be no eventsFile
+			config.controler().setWriteEventsInterval(0);
 			config.controler().setLastIteration(0);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
@@ -103,10 +102,32 @@ public class RunRuhrgebietScenarioTest {
 			config.qsim().setFlowCapFactor( config.qsim().getFlowCapFactor()*sample );
 			config.qsim().setStorageCapFactor( config.qsim().getStorageCapFactor()*sample );
 			
+			org.matsim.core.controler.Controler controler = ruhrgebietScenarioRunner.prepareControler();
+			
+			// Mode-specific travel time of the Agent (person1:id = 126516001 && person2:id = 1286397001 )
+			final Id<Person> person1 = Id.createPersonId("1265160001");
+			final Id<Person> person2 = Id.createPersonId("1286397001");
+			final List<Id<Person>> personList = new ArrayList<>();
+			personList.add(person1);
+			personList.add(person2);
+			
+			final List<String> legModesToIgnore = new ArrayList<>();
+			legModesToIgnore.add("transit_walk");
+			legModesToIgnore.add("access_walk");
+			legModesToIgnore.add("egress_walk");
+			
+			PersonsFirstLegTTAnalyzer personsFirstLegTTAnalyzerNoHelpModes = new PersonsFirstLegTTAnalyzer(personList, legModesToIgnore);
+			PersonsFirstLegTTAnalyzer personsFirstLegTTAnalyzerWithHelpModes = new PersonsFirstLegTTAnalyzer(personList, new ArrayList<>());
+			controler.addOverridingModule(new AbstractModule() {
+				
+				@Override
+				public void install() {
+					this.addEventHandlerBinding().toInstance(personsFirstLegTTAnalyzerNoHelpModes);
+					this.addEventHandlerBinding().toInstance(personsFirstLegTTAnalyzerWithHelpModes);
+				}
+			});
+			
 			ruhrgebietScenarioRunner.run();
-
-			// ScoresTests
-			Assert.assertEquals(1.2746698932141114,ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
 
 			// ModestatsTests
 			Map<String,Double> modestats = getModestats("test/output/org/matsim/run/RunRuhrgebietScenarioTest/test1/ruhrgebiet-v1.0-1pct.modestats.txt");
@@ -116,22 +137,17 @@ public class RunRuhrgebietScenarioTest {
 			Assert.assertEquals(0.06229143492769744,modestats.get("walk"),0.05);
 			Assert.assertEquals(0.1724137931034483,modestats.get("ride"),0.05);
 
-			// Mode-specific travel time of the Agent (person1:id = 126516001 && person2:id = 1286397001 )
-			String person1 = "1265160001";
-			String person2 = "1286397001";
-			List<String> personList = new LinkedList<>();
-			personList.add(person1); personList.add(person2);
+			Assert.assertEquals(198.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person1).get("car").getTripTime(),EPSILON);
+			Assert.assertEquals(609.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person1).get("pt").getTripTime(),EPSILON);
+			Assert.assertEquals(1160.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person1).get("ride").getTripTime(),EPSILON);
+			Assert.assertEquals(1270.0,personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person1).get("walk").getTripTime(),EPSILON);
 
-			Map<String, Map<String, TripTime>> tripTime2mode2Person = tripTime2mode2Person(personList);
-
-			Assert.assertEquals(198.0, tripTime2mode2Person.get(person1).get("car").tripTime,EPSILON);
-			Assert.assertEquals(609.0, tripTime2mode2Person.get(person1).get("pt").tripTime,EPSILON);
-			Assert.assertEquals(1160.0, tripTime2mode2Person.get(person1).get("ride").tripTime,EPSILON);
-			Assert.assertEquals(1270.0,tripTime2mode2Person.get(person1).get("walk").tripTime,EPSILON);
-
-			Assert.assertEquals(1474.0, tripTime2mode2Person.get(person2).get("bike").tripTime,EPSILON);
-			Assert.assertEquals(537.0, tripTime2mode2Person.get(person2).get("ride").tripTime,EPSILON);
-			Assert.assertEquals(1287.0,tripTime2mode2Person.get(person2).get("walk").tripTime,EPSILON);
+			Assert.assertEquals(1474.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person2).get("bike").getTripTime(),EPSILON);
+			Assert.assertEquals(537.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person2).get("ride").getTripTime(),EPSILON);
+			Assert.assertEquals(1287.0,personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person2).get("walk").getTripTime(),EPSILON);
+			
+			// ScoresTests
+			Assert.assertEquals(1.2746698932141114, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
 
 		} catch ( Exception ee ) {
 			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
@@ -167,28 +183,5 @@ public class RunRuhrgebietScenarioTest {
 		}
 		return getModestats;
 	}
-
-	private Map<String,Map<String,TripTime>> tripTime2mode2Person (List<String> personList){
-
-		String networkFile = "test/output/org/matsim/run/RunRuhrgebietScenarioTest/test1/ruhrgebiet-v1.0-1pct.output_network.xml.gz";
-		String outputEventsFile = "test/output/org/matsim/run/RunRuhrgebietScenarioTest/test1/ruhrgebiet-v1.0-1pct.output_events.xml.gz";
-
-		EventsManager eventsManager = EventsUtils.createEventsManager();
-
-		Network network = NetworkUtils.createNetwork();
-		new MatsimNetworkReader(network).readFile(networkFile);
-
-		SpecificTripTime2ModeEventHandler specificTripTime2ModeEventHandler = new SpecificTripTime2ModeEventHandler(network, personList);
-
-		eventsManager.addHandler(specificTripTime2ModeEventHandler);
-
-		MatsimEventsReader reader = new MatsimEventsReader(eventsManager);
-		reader.readFile(outputEventsFile);
-
-		return specificTripTime2ModeEventHandler.allTrips2Person;
-	}
-
-
-
 }
 
