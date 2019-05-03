@@ -131,8 +131,8 @@ public class RunRuhrgebietScenarioTest {
 			Assert.assertEquals(0.06229143492769744,modestats.get("walk"),EPSILON);
 			Assert.assertEquals(0.1724137931034483,modestats.get("ride"),EPSILON);
 
-			// travel time
-			
+			// travel times of person 1
+						
 			// first access walk leg
 			Assert.assertEquals(18.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(0).getTravelTime(),EPSILON);
 			
@@ -151,6 +151,8 @@ public class RunRuhrgebietScenarioTest {
 			// car
 			Assert.assertEquals(198.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(9).getTravelTime(),EPSILON);
 
+			// travel times of person 2
+			
 			// bike
 			Assert.assertEquals(1474.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person2).get(1).getTravelTime(),EPSILON);
 
