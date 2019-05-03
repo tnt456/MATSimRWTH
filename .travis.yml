@@ -9,6 +9,8 @@ env:
   matrix:
     - TEST=RunRuhrgebietScenarioTest#test0
     - TEST=RunRuhrgebietScenarioTest#test1
+    - TEST=RunRuhrgebietScenarioTest#test2
+
 
 
 script:
