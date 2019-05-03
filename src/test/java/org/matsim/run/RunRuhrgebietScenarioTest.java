@@ -88,7 +88,7 @@ public class RunRuhrgebietScenarioTest {
 			RunRuhrgebietScenario ruhrgebietScenarioRunner = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, configFileName });
 
 			Config config = ruhrgebietScenarioRunner.prepareConfig();
-			config.controler().setWriteEventsInterval(1);
+			config.controler().setWriteEventsInterval(0);
 			config.controler().setLastIteration(0);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
