@@ -112,12 +112,12 @@ public class RunRuhrgebietScenarioTest {
 			personList.add(person1);
 			personList.add(person2);
 			
-			LegAnalyzer personsFirstLegTTAnalyzerNoHelpModes = new LegAnalyzer(personList);
+			LegAnalyzer legAnalyzer = new LegAnalyzer(personList);
 			controler.addOverridingModule(new AbstractModule() {
 				
 				@Override
 				public void install() {
-					this.addEventHandlerBinding().toInstance(personsFirstLegTTAnalyzerNoHelpModes);
+					this.addEventHandlerBinding().toInstance(legAnalyzer);
 				}
 			});
 			
@@ -134,33 +134,33 @@ public class RunRuhrgebietScenarioTest {
 			// travel times of person 1
 						
 			// first access walk leg
-			Assert.assertEquals(18.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(0).getTravelTime(),EPSILON);
+			Assert.assertEquals(18.0, legAnalyzer.getPerson2legInfo().get(person1).get(0).getTravelTime(),EPSILON);
 			
 			// ride
-			Assert.assertEquals(1160.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(1).getTravelTime(),EPSILON);
+			Assert.assertEquals(1160.0, legAnalyzer.getPerson2legInfo().get(person1).get(1).getTravelTime(),EPSILON);
 			
 			// first egress walk leg
-			Assert.assertEquals(117.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(2).getTravelTime(),EPSILON);
+			Assert.assertEquals(117.0, legAnalyzer.getPerson2legInfo().get(person1).get(2).getTravelTime(),EPSILON);
 			
 			// walk
-			Assert.assertEquals(1270.0,personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(4).getTravelTime(),EPSILON);
+			Assert.assertEquals(1270.0,legAnalyzer.getPerson2legInfo().get(person1).get(4).getTravelTime(),EPSILON);
 
 			// pt
-			Assert.assertEquals(609.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(6).getTravelTime(),EPSILON);
+			Assert.assertEquals(609.0, legAnalyzer.getPerson2legInfo().get(person1).get(6).getTravelTime(),EPSILON);
 
 			// car
-			Assert.assertEquals(198.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(9).getTravelTime(),EPSILON);
+			Assert.assertEquals(198.0, legAnalyzer.getPerson2legInfo().get(person1).get(9).getTravelTime(),EPSILON);
 
 			// travel times of person 2
 			
 			// bike
-			Assert.assertEquals(1474.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person2).get(1).getTravelTime(),EPSILON);
+			Assert.assertEquals(1474.0, legAnalyzer.getPerson2legInfo().get(person2).get(1).getTravelTime(),EPSILON);
 
 			// ride
-			Assert.assertEquals(537.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person2).get(4).getTravelTime(),EPSILON);
+			Assert.assertEquals(537.0, legAnalyzer.getPerson2legInfo().get(person2).get(4).getTravelTime(),EPSILON);
 			
 			// walk
-			Assert.assertEquals(1287.0,personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person2).get(6).getTravelTime(),EPSILON);
+			Assert.assertEquals(1287.0,legAnalyzer.getPerson2legInfo().get(person2).get(6).getTravelTime(),EPSILON);
 			
 			// Scores
 //			Assert.assertEquals(1.2746698932141114, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
