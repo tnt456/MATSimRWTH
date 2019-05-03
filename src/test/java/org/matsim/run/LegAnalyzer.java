@@ -20,8 +20,8 @@
 package org.matsim.run;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.PersonArrivalEvent;
@@ -31,54 +31,61 @@ import org.matsim.api.core.v01.events.handler.PersonDepartureEventHandler;
 import org.matsim.api.core.v01.population.Person;
 
 /**
- * @author zmeng
+ * @author zmeng, ikaddoura
  *
  */
-class PersonsFirstLegTTAnalyzer implements PersonDepartureEventHandler, PersonArrivalEventHandler {
+class LegAnalyzer implements PersonDepartureEventHandler, PersonArrivalEventHandler {
 
-    private final List<Id<Person>> personList;
-    private final List<String> helpModes;
-    private final Map<Id<Person>,  Map<String, TripTime>> person2mode2legTime = new HashMap<>();
+    private final Set<Id<Person>> personList;
+    private final Map<Id<Person>, Map<Integer, LegInfo>> person2legInfo = new HashMap<>();
+    private final Map<Id<Person>, Integer> person2legNr = new HashMap<>();
 
-    PersonsFirstLegTTAnalyzer(List<Id<Person>> personList, List<String> legModesToIgnore) {
-
+    LegAnalyzer(Set<Id<Person>> personList) {
         this.personList = personList;
-        this.helpModes = legModesToIgnore;
-
-        for(int i=0; i<this.personList.size(); i++){
-            this.person2mode2legTime.put(personList.get(i), new HashMap<String, TripTime>());
-        }
     }
 
-    @Override
+	@Override
 	public void reset(int iteration) {
-    	this.getPerson2Mode2LegTime().clear();
+		this.person2legInfo.clear();
+		this.person2legNr.clear();
     }
 
 	@Override
     public void handleEvent(PersonDepartureEvent event){
 
-        if (person2mode2legTime.containsKey(event.getPersonId()) && (!helpModes.contains(event.getLegMode()))){
-            if (!person2mode2legTime.get(event.getPersonId()).containsKey(event.getLegMode())) {
-                person2mode2legTime.get(event.getPersonId()).put(event.getLegMode(), new TripTime());
-                person2mode2legTime.get(event.getPersonId()).get(event.getLegMode()).setBeginTime(event.getTime());
-            }
-        }
+		if (this.personList.contains(event.getPersonId())) {
+			
+			if (this.person2legNr.get(event.getPersonId()) == null) {
+				
+				this.person2legNr.put(event.getPersonId(), 0);
+				
+				Map<Integer, LegInfo> legNr2LegInfo = new HashMap<>();
+				this.person2legInfo.put(event.getPersonId(), legNr2LegInfo);
+				
+			} else {
+				int legNr = this.person2legNr.get(event.getPersonId()) + 1;
+				this.person2legNr.put(event.getPersonId(), legNr);
+			}
+			
+			this.person2legInfo.get(event.getPersonId()).put(person2legNr.get(event.getPersonId()), new LegInfo(event.getLegMode(), event.getTime()));
+			
+		} else {
+			// skip person
+		}
     }
 
 
     @Override
     public void handleEvent(PersonArrivalEvent event) {
-        if(person2mode2legTime.containsKey(event.getPersonId()) && (!helpModes.contains(event.getLegMode()))){
-            if(person2mode2legTime.get(event.getPersonId()).get(event.getLegMode()).getEndTime() == 0.){
-                person2mode2legTime.get(event.getPersonId()).get(event.getLegMode()).setEndTime(event.getTime());
-                person2mode2legTime.get(event.getPersonId()).get(event.getLegMode()).setTripTime(event.getTime() - person2mode2legTime.get(event.getPersonId()).get(event.getLegMode()).getBeginTime());
-            }
-        }
+		if (this.personList.contains(event.getPersonId())) {
+			this.person2legInfo.get(event.getPersonId()).get(person2legNr.get(event.getPersonId())).setArrivalTime(event.getTime());
+		} else {
+			// skip person
+		}
     }
 
-	public Map<Id<Person>, Map<String, TripTime>> getPerson2Mode2LegTime() {
-		return person2mode2legTime;
+	public Map<Id<Person>, Map<Integer, LegInfo>> getPerson2legInfo() {
+		return person2legInfo;
 	}
 
 }

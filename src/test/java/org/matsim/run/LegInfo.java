@@ -3,7 +3,7 @@
  *                                                                         *
  * *********************************************************************** *
  *                                                                         *
- * copyright       : (C) 2019 by the members listed in the COPYING,        *
+ * copyright       : (C) 2017 by the members listed in the COPYING,        *
  *                   LICENSE and WARRANTY file.                            *
  * email           : info at matsim dot org                                *
  *                                                                         *
@@ -20,34 +20,39 @@
 package org.matsim.run;
 
 /**
- * @author zmeng
- *
- */
-class TripTime{
+* @author ikaddoura
+*/
 
-    private double beginTime;
-    private double endTime;
-    private double tripTime;
-    
-	public double getBeginTime() {
-		return beginTime;
+public class LegInfo {
+
+	private final String legMode;
+	private final double departureTime;
+	private double arrivalTime;
+	
+	public LegInfo(String legMode, double departureTime) {
+		this.legMode = legMode;
+		this.departureTime = departureTime;
 	}
-	public void setBeginTime(double beginTime) {
-		this.beginTime = beginTime;
+
+	public String getLegMode() {
+		return legMode;
 	}
-	public double getEndTime() {
-		return endTime;
+
+	public double getDepartureTime() {
+		return departureTime;
 	}
-	public void setEndTime(double endTime) {
-		this.endTime = endTime;
+
+	public double getArrivalTime() {
+		return arrivalTime;
 	}
-	public double getTripTime() {
-		return tripTime;
+
+	public void setArrivalTime(double time) {
+		this.arrivalTime = time;
 	}
-	public void setTripTime(double tripTime) {
-		this.tripTime = tripTime;
+
+	public double getTravelTime() {
+		return arrivalTime - departureTime;
 	}
-    
-    
 
 }
+

@@ -24,11 +24,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -45,7 +45,8 @@ import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.testcases.MatsimTestUtils;
 
 /**
- * @author nagel zmeng
+ * 
+ * @author zmeng, ikaddoura
  *
  */
 public class RunRuhrgebietScenarioTest {
@@ -87,7 +88,7 @@ public class RunRuhrgebietScenarioTest {
 			RunRuhrgebietScenario ruhrgebietScenarioRunner = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, configFileName });
 
 			Config config = ruhrgebietScenarioRunner.prepareConfig();
-			config.controler().setWriteEventsInterval(0);
+			config.controler().setWriteEventsInterval(1);
 			config.controler().setLastIteration(0);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
 			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
@@ -107,29 +108,100 @@ public class RunRuhrgebietScenarioTest {
 			// Mode-specific travel time of the Agent (person1:id = 126516001 && person2:id = 1286397001 )
 			final Id<Person> person1 = Id.createPersonId("1265160001");
 			final Id<Person> person2 = Id.createPersonId("1286397001");
-			final List<Id<Person>> personList = new ArrayList<>();
+			final Set<Id<Person>> personList = new HashSet<>();
 			personList.add(person1);
 			personList.add(person2);
 			
-			final List<String> legModesToIgnore = new ArrayList<>();
-			legModesToIgnore.add("transit_walk");
-			legModesToIgnore.add("access_walk");
-			legModesToIgnore.add("egress_walk");
-			
-			PersonsFirstLegTTAnalyzer personsFirstLegTTAnalyzerNoHelpModes = new PersonsFirstLegTTAnalyzer(personList, legModesToIgnore);
-			PersonsFirstLegTTAnalyzer personsFirstLegTTAnalyzerWithHelpModes = new PersonsFirstLegTTAnalyzer(personList, new ArrayList<>());
+			LegAnalyzer personsFirstLegTTAnalyzerNoHelpModes = new LegAnalyzer(personList);
 			controler.addOverridingModule(new AbstractModule() {
 				
 				@Override
 				public void install() {
 					this.addEventHandlerBinding().toInstance(personsFirstLegTTAnalyzerNoHelpModes);
-					this.addEventHandlerBinding().toInstance(personsFirstLegTTAnalyzerWithHelpModes);
 				}
 			});
 			
 			ruhrgebietScenarioRunner.run();
 
-			// ModestatsTests
+			// modal split
+			Map<String,Double> modestats = getModestats("test/output/org/matsim/run/RunRuhrgebietScenarioTest/test1/ruhrgebiet-v1.0-1pct.modestats.txt");
+			Assert.assertEquals(0.09121245828698554,modestats.get("bike"),EPSILON);
+			Assert.assertEquals(0.3770856507230256,modestats.get("car"),EPSILON);
+			Assert.assertEquals(0.29699666295884314,modestats.get("pt"),EPSILON);
+			Assert.assertEquals(0.06229143492769744,modestats.get("walk"),EPSILON);
+			Assert.assertEquals(0.1724137931034483,modestats.get("ride"),EPSILON);
+
+			// travel time
+			
+			// first access walk trip
+			Assert.assertEquals(18.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(0).getTravelTime(),EPSILON);
+			
+			// first ride trip
+			Assert.assertEquals(1160.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(1).getTravelTime(),EPSILON);
+			
+			// first egress walk trip
+			Assert.assertEquals(117.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(2).getTravelTime(),EPSILON);
+			
+			// walk
+			Assert.assertEquals(1270.0,personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(4).getTravelTime(),EPSILON);
+
+			// pt
+			Assert.assertEquals(609.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(6).getTravelTime(),EPSILON);
+
+			// car
+			Assert.assertEquals(198.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(9).getTravelTime(),EPSILON);
+
+			// bike
+			Assert.assertEquals(1474.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(1).getTravelTime(),EPSILON);
+
+			// ride
+			Assert.assertEquals(537.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(4).getTravelTime(),EPSILON);
+			
+			// walk
+			Assert.assertEquals(1287.0,personsFirstLegTTAnalyzerNoHelpModes.getPerson2legInfo().get(person1).get(6).getTravelTime(),EPSILON);
+			
+			// Scores
+//			Assert.assertEquals(1.2746698932141114, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
+			Assert.assertEquals(1.10941588204182, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
+
+		} catch ( Exception ee ) {
+			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
+
+			// if one catches an exception, then one needs to explicitly fail the test:
+			ee.printStackTrace();
+			Assert.fail();
+		}
+	}
+	
+	
+	@Test
+	public final void test2() {
+		
+		String configFileName = "scenarios/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-1pct.config.xml";
+
+		try {
+
+			RunRuhrgebietScenario ruhrgebietScenarioRunner = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, configFileName });
+
+			Config config = ruhrgebietScenarioRunner.prepareConfig();
+			config.controler().setWriteEventsInterval(0);
+			config.controler().setLastIteration(20);
+			config.controler().setOutputDirectory( utils.getOutputDirectory() );
+			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+			config.controler().setWritePlansUntilIteration( 0 );
+			config.controler().setWritePlansInterval( 0 );
+			config.qsim().setNumberOfThreads( 1 );
+			config.global().setNumberOfThreads( 1 );
+			
+			Scenario scenario = ruhrgebietScenarioRunner.prepareScenario();
+			final double sample = 0.01;
+			downsample( scenario.getPopulation().getPersons(), sample ) ;
+			config.qsim().setFlowCapFactor( config.qsim().getFlowCapFactor()*sample );
+			config.qsim().setStorageCapFactor( config.qsim().getStorageCapFactor()*sample );			
+			
+			ruhrgebietScenarioRunner.run();
+
+			// modal split
 			Map<String,Double> modestats = getModestats("test/output/org/matsim/run/RunRuhrgebietScenarioTest/test1/ruhrgebiet-v1.0-1pct.modestats.txt");
 			Assert.assertEquals(0.09121245828698554,modestats.get("bike"),0.05);
 			Assert.assertEquals(0.3770856507230256,modestats.get("car"),0.05);
@@ -137,22 +209,15 @@ public class RunRuhrgebietScenarioTest {
 			Assert.assertEquals(0.06229143492769744,modestats.get("walk"),0.05);
 			Assert.assertEquals(0.1724137931034483,modestats.get("ride"),0.05);
 
-			Assert.assertEquals(198.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person1).get("car").getTripTime(),EPSILON);
-			Assert.assertEquals(609.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person1).get("pt").getTripTime(),EPSILON);
-			Assert.assertEquals(1160.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person1).get("ride").getTripTime(),EPSILON);
-			Assert.assertEquals(1270.0,personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person1).get("walk").getTripTime(),EPSILON);
-
-			Assert.assertEquals(1474.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person2).get("bike").getTripTime(),EPSILON);
-			Assert.assertEquals(537.0, personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person2).get("ride").getTripTime(),EPSILON);
-			Assert.assertEquals(1287.0,personsFirstLegTTAnalyzerNoHelpModes.getPerson2Mode2LegTime().get(person2).get("walk").getTripTime(),EPSILON);
-			
-			// ScoresTests
-			Assert.assertEquals(1.2746698932141114, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
+			// scores
+			// TODO: add score test
+//			Assert.assertEquals(xxx, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(20), EPSILON);
 
 		} catch ( Exception ee ) {
 			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
 
 			// if one catches an exception, then one needs to explicitly fail the test:
+			ee.printStackTrace();
 			Assert.fail();
 		}
 	}
