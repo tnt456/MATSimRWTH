@@ -105,7 +105,6 @@ public class RunRuhrgebietScenarioTest {
 			
 			org.matsim.core.controler.Controler controler = ruhrgebietScenarioRunner.prepareControler();
 			
-			// Mode-specific travel time of the Agent (person1:id = 126516001 && person2:id = 1286397001 )
 			final Id<Person> person1 = Id.createPersonId("1265160001");
 			final Id<Person> person2 = Id.createPersonId("1286397001");
 			final Set<Id<Person>> personList = new HashSet<>();
@@ -124,6 +123,7 @@ public class RunRuhrgebietScenarioTest {
 			ruhrgebietScenarioRunner.run();
 
 			// modal split
+			
 			Map<String,Double> modestats = getModestats("test/output/org/matsim/run/RunRuhrgebietScenarioTest/test1/ruhrgebiet-v1.0-1pct.modestats.txt");
 			Assert.assertEquals(0.09121245828698554,modestats.get("bike"),EPSILON);
 			Assert.assertEquals(0.3770856507230256,modestats.get("car"),EPSILON);
@@ -134,20 +134,15 @@ public class RunRuhrgebietScenarioTest {
 			// travel times of person 1
 						
 			// first access walk leg
-			Assert.assertEquals(18.0, legAnalyzer.getPerson2legInfo().get(person1).get(0).getTravelTime(),EPSILON);
-			
+			Assert.assertEquals(18.0, legAnalyzer.getPerson2legInfo().get(person1).get(0).getTravelTime(),EPSILON);		
 			// ride
-			Assert.assertEquals(1160.0, legAnalyzer.getPerson2legInfo().get(person1).get(1).getTravelTime(),EPSILON);
-			
+			Assert.assertEquals(1160.0, legAnalyzer.getPerson2legInfo().get(person1).get(1).getTravelTime(),EPSILON);	
 			// first egress walk leg
 			Assert.assertEquals(117.0, legAnalyzer.getPerson2legInfo().get(person1).get(2).getTravelTime(),EPSILON);
-			
 			// walk
 			Assert.assertEquals(1270.0,legAnalyzer.getPerson2legInfo().get(person1).get(4).getTravelTime(),EPSILON);
-
 			// pt
 			Assert.assertEquals(609.0, legAnalyzer.getPerson2legInfo().get(person1).get(6).getTravelTime(),EPSILON);
-
 			// car
 			Assert.assertEquals(198.0, legAnalyzer.getPerson2legInfo().get(person1).get(9).getTravelTime(),EPSILON);
 
@@ -155,14 +150,13 @@ public class RunRuhrgebietScenarioTest {
 			
 			// bike
 			Assert.assertEquals(1474.0, legAnalyzer.getPerson2legInfo().get(person2).get(1).getTravelTime(),EPSILON);
-
 			// ride
 			Assert.assertEquals(537.0, legAnalyzer.getPerson2legInfo().get(person2).get(7).getTravelTime(),EPSILON);
-			
 			// walk
 			Assert.assertEquals(1287.0,legAnalyzer.getPerson2legInfo().get(person2).get(9).getTravelTime(),EPSILON);
 			
-			// Scores
+			// scores
+			
 //			Assert.assertEquals(1.2746698932141114, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
 			Assert.assertEquals(1.10941588204182, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
 
@@ -204,6 +198,7 @@ public class RunRuhrgebietScenarioTest {
 			ruhrgebietScenarioRunner.run();
 
 			// modal split
+			
 			Map<String,Double> modestats = getModestats("test/output/org/matsim/run/RunRuhrgebietScenarioTest/test1/ruhrgebiet-v1.0-1pct.modestats.txt");
 			Assert.assertEquals(0.09121245828698554,modestats.get("bike"),0.05);
 			Assert.assertEquals(0.3770856507230256,modestats.get("car"),0.05);
@@ -212,6 +207,7 @@ public class RunRuhrgebietScenarioTest {
 			Assert.assertEquals(0.1724137931034483,modestats.get("ride"),0.05);
 
 			// scores
+			
 			// TODO: add score test
 //			Assert.assertEquals(xxx, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(20), EPSILON);
 
