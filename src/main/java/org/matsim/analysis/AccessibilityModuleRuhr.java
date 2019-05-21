@@ -46,7 +46,6 @@ import org.matsim.contrib.accessibility.LeastCostPathCalculatorAccessibilityCont
 import org.matsim.contrib.accessibility.Modes4Accessibility;
 import org.matsim.contrib.accessibility.NetworkModeAccessibilityExpContributionCalculator;
 import org.matsim.contrib.accessibility.TripRouterAccessibilityContributionCalculator;
-import org.matsim.contrib.accessibility.VoronoiGeometryUtils;
 import org.matsim.contrib.accessibility.gis.GridUtils;
 import org.matsim.contrib.accessibility.interfaces.FacilityDataExchangeInterface;
 import org.matsim.contrib.accessibility.utils.AccessibilityUtils;
