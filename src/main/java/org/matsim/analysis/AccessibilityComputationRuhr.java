@@ -19,6 +19,7 @@
 package org.matsim.analysis;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,8 @@ import org.matsim.contrib.accessibility.utils.VisualizationUtils;
 import org.matsim.contrib.accessibility.Modes4Accessibility;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
+import org.matsim.core.config.groups.FacilitiesConfigGroup.FacilitiesSource;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.run.RunRuhrgebietScenario;
@@ -49,26 +52,42 @@ public class AccessibilityComputationRuhr {
 		// Parameters
 		String configFileName = "scenarios/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-1pct.config.xml";
 
-		int tileSize_m = 1000;
+		int tileSize_m = 2000;
 		String accessibilityOutputFolder = "accessibility_essen_" + tileSize_m + "/";
-		boolean createQGisOutput = true;
 		Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
+//		String accessibilityOutputFolder = "accessibility_ruhrgebiet_" + tileSize_m + "/";
 //		Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
-		String facilitiesFileName = "/Users/dominik/Bicycle/NEMO/facilities/2019-05-08_essen_vicinity.xml.gz";
+		boolean createQGisOutput = true;
+
+//		String facilitiesFileName = "/Users/dominik/Bicycle/NEMO/facilities/2019-05-08_essen_vicinity.xml.gz";
+//		String facilitiesFileName = "../shared-svn/projects/nemo_mercator/data/matsim_input/accessibility/2019-05-08_essen_vicinity.xml.gz";
+//		String facilitiesFileName = "../shared-svn/projects/nemo_mercator/data/matsim_input/accessibility/ruhrgebiet-v1.0-1pct.output_facilities.xml.gz";
 		final List<String> activityTypes = Arrays.asList(new String[]{"supermarket"});
-		//
+		
+//		final List<String> activityTypes = new ArrayList<>();
+//		final double minDuration = 600;
+//        final double maxDuration = 3600 * 27;
+//        final double difference = 600;
+//        for (double duration = minDuration; duration <= maxDuration; duration += difference) {
+//            activityTypes.add("work_" + duration);
+//        }
+        
+        for (String act : activityTypes) {
+        	log.info(act);
+        }
 
 		RunRuhrgebietScenario ruhrgebietScenarioRunner = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, configFileName });
 		
 		Config config = ruhrgebietScenarioRunner.prepareConfig();
 	
-		config.facilities().setInputFile(new File(facilitiesFileName).getAbsolutePath());
-		
+//		config.facilities().setInputFile(new File(facilitiesFileName).getAbsolutePath());
+		config.facilities().setFacilitiesSource(FacilitiesSource.onePerActivityLocationInPlansFile);
+			
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		config.controler().setFirstIteration(0);
 		config.controler().setLastIteration(0);
 		
-		config.controler().setOutputDirectory(config.controler().getOutputDirectory() + accessibilityOutputFolder);
+		config.controler().setOutputDirectory(accessibilityOutputFolder);
 		
 		AccessibilityConfigGroup acg = ConfigUtils.addOrGetModule(config, AccessibilityConfigGroup.class);
 		acg.setTileSize_m(tileSize_m);
@@ -79,6 +98,8 @@ public class AccessibilityComputationRuhr {
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true);
 		
 		Scenario scenario = ruhrgebietScenarioRunner.prepareScenario();
+		
+		// down-sampling the scenario
 		final double sample = 0.01;
 		downsample( scenario.getPopulation().getPersons(), sample ) ;
 		config.qsim().setFlowCapFactor( config.qsim().getFlowCapFactor()*sample );
