@@ -60,7 +60,7 @@ public class AccessibilityComputationRuhr {
 		boolean createQGisOutput = true;
 
 //		String facilitiesFileName = "/Users/dominik/Bicycle/NEMO/facilities/2019-05-08_essen_vicinity.xml.gz";
-//		String facilitiesFileName = "../shared-svn/projects/nemo_mercator/data/matsim_input/accessibility/2019-05-08_essen_vicinity.xml.gz";
+		String facilitiesFileName = "../shared-svn/projects/nemo_mercator/data/matsim_input/accessibility/2019-05-08_essen_vicinity.xml.gz";
 //		String facilitiesFileName = "../shared-svn/projects/nemo_mercator/data/matsim_input/accessibility/ruhrgebiet-v1.0-1pct.output_facilities.xml.gz";
 		final List<String> activityTypes = Arrays.asList(new String[]{"supermarket"});
 		
@@ -80,8 +80,8 @@ public class AccessibilityComputationRuhr {
 		
 		Config config = ruhrgebietScenarioRunner.prepareConfig();
 	
-//		config.facilities().setInputFile(new File(facilitiesFileName).getAbsolutePath());
-		config.facilities().setFacilitiesSource(FacilitiesSource.onePerActivityLocationInPlansFile);
+		config.facilities().setInputFile(new File(facilitiesFileName).getAbsolutePath());
+//		config.facilities().setFacilitiesSource(FacilitiesSource.onePerActivityLocationInPlansFile);
 			
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		config.controler().setFirstIteration(0);
