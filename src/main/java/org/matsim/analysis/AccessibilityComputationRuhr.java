@@ -93,10 +93,10 @@ public class AccessibilityComputationRuhr {
 		acg.setAreaOfAccessibilityComputation(AreaOfAccesssibilityComputation.fromBoundingBox);
 		acg.setEnvelope(envelope);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, true); // car freespeed accessibility, should work
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, false); // congested car based accessibility, should work as well
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, false); // teleported walk mode, should work as well
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.matrixBasedPt, false); // TODO: check!
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, false); // TODO: doesn't work write now (accessibility = -Infinity)! FIXME!
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, true); // congested car based accessibility, should work as well
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, true); // teleported walk mode, should work as well
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.matrixBasedPt, true); // TODO: check!
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true); // TODO: check!
 		
 		Scenario scenario = ruhrgebietScenarioRunner.prepareScenario();
 		
