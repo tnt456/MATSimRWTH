@@ -41,6 +41,11 @@ import org.matsim.core.config.groups.FacilitiesConfigGroup.FacilitiesSource;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.gbl.MatsimRandom;
+import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.facilities.ActivityFacilities;
+import org.matsim.facilities.ActivityFacility;
+import org.matsim.facilities.FacilitiesFromPopulation;
+import org.matsim.facilities.Facility;
 import org.matsim.run.RunRuhrgebietScenario;
 
 /**
@@ -80,9 +85,9 @@ public class AccessibilityComputationRuhr {
 		// Alternative A: use a facility file which is generated externaly, e.g. based on OSM
 //		config.facilities().setInputFile(new File(facilitiesFileName).getAbsolutePath());
 		
-		// Alternative B: generate facilities based on the activities in the plans file
-		config.facilities().setFacilitiesSource(FacilitiesSource.onePerActivityLocationInPlansFile);
-	
+		// Alternative B: generate facilities based on the activities in the plans file, see below...
+		config.facilities().setFacilitiesSource(FacilitiesSource.setInScenario);
+
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		config.controler().setFirstIteration(0);
 		config.controler().setLastIteration(0);
@@ -93,10 +98,10 @@ public class AccessibilityComputationRuhr {
 		acg.setAreaOfAccessibilityComputation(AreaOfAccesssibilityComputation.fromBoundingBox);
 		acg.setEnvelope(envelope);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, true); // car freespeed accessibility, should work
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, true); // congested car based accessibility, should work as well
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, true); // teleported walk mode, should work as well
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.matrixBasedPt, true); // TODO: check!
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true); // TODO: check!
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, false); // congested car based accessibility, should work as well
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, false); // teleported walk mode, should work as well
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, false); // TODO: check!
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, false); // TODO: check!
 		
 		Scenario scenario = ruhrgebietScenarioRunner.prepareScenario();
 		
@@ -132,6 +137,18 @@ public class AccessibilityComputationRuhr {
 		ActivityParams actParams = new ActivityParams(activityConsideredForAccessibilityComputation);
 		actParams.setTypicalDuration(8 * 3600.); // shouldn't have any effect in the accessibility computation
 		config.planCalcScore().addActivityParams(actParams);
+		
+		// now generate the facilities from the population and add them to the scenario
+		{
+			Scenario scenarioToGenerateFacilities = ScenarioUtils.createScenario(ConfigUtils.createConfig());
+			scenarioToGenerateFacilities.getConfig().facilities().setFacilitiesSource(FacilitiesSource.onePerActivityLocationInPlansFile);
+			FacilitiesFromPopulation facilitiesFromPopulation = new FacilitiesFromPopulation(scenarioToGenerateFacilities);
+			facilitiesFromPopulation.setAssignLinksToFacilitiesIfMissing(scenario.getNetwork());
+			facilitiesFromPopulation.run(scenario.getPopulation());			
+			for (ActivityFacility facility : scenarioToGenerateFacilities.getActivityFacilities().getFacilities().values()) {
+				scenario.getActivityFacilities().addActivityFacility(facility);
+			}
+		}
 		
 		org.matsim.core.controler.Controler controler = ruhrgebietScenarioRunner.prepareControler();
 		
