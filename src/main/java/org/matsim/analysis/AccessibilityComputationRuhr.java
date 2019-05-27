@@ -18,7 +18,7 @@
  * *********************************************************************** */
 package org.matsim.analysis;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -39,84 +39,107 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.FacilitiesConfigGroup.FacilitiesSource;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
-import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.facilities.ActivityFacilities;
 import org.matsim.facilities.ActivityFacility;
 import org.matsim.facilities.FacilitiesFromPopulation;
-import org.matsim.facilities.Facility;
 import org.matsim.run.RunRuhrgebietScenario;
 
 /**
- * @author dziemke
+ * @author dziemke, ikaddoura
  */
 public class AccessibilityComputationRuhr {
 	private static final Logger log = Logger.getLogger( AccessibilityComputationRuhr.class ) ;
-
+	
+	private final boolean downsampling = false;
+	private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
+//	private final Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
+	private final List<String> consideredActivityTypePrefixes = Arrays.asList(new String[]{"work","other","education","leisure"});
+	private final boolean createQGisOutput = true;
+	private final boolean computeFreespeedAccessibility = true;
+	private final boolean computeCarAccessibility = true;
+	private final boolean computeWalkAccessibility = true;
+	private final boolean computePtAccessibility = true;
+	private final boolean computeBikeAccessibility = true;
+	
 	public static void main(String[] args) {
-		String configFileName = "scenarios/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-1pct.config.xml";
-
-		int tileSize_m = 2000;
-		String accessibilityOutputFolder = "accessibility_essen_" + tileSize_m + "/";
-		Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
-
-//		String accessibilityOutputFolder = "accessibility_ruhrgebiet_" + tileSize_m + "/";
-//		Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
 		
-		boolean createQGisOutput = true;
-
-		// Alternative A: use a facility file which is generated externaly, e.g. based on OSM
-//		String facilitiesFileName = "/Users/dominik/Bicycle/NEMO/facilities/2019-05-08_essen_vicinity.xml.gz";
-//		String facilitiesFileName = "../shared-svn/projects/nemo_mercator/data/matsim_input/accessibility/2019-05-08_essen_vicinity.xml.gz";
-//		String facilitiesFileName = "../shared-svn/projects/nemo_mercator/data/matsim_input/accessibility/ruhrgebiet-v1.0-1pct.output_facilities.xml.gz";
-//		final List<String> activityTypes = Arrays.asList(new String[]{"supermarket"});
+		String outputDirectory;
+		String runId;	
+		int tileSize_m;		
 		
-		final List<String> consideredActivityTypePrefixes = new ArrayList<>();
-        consideredActivityTypePrefixes.add("work");
-        consideredActivityTypePrefixes.add("other");
-        consideredActivityTypePrefixes.add("education");
-        consideredActivityTypePrefixes.add("leisure");
+		if (args.length > 0) {
+			
+			outputDirectory = args[0];
+			log.info("outputDirectory: " + outputDirectory);
+			
+			runId = args[1];
+			log.info("runId: " + runId);
+			
+			tileSize_m = Integer.parseInt(args[2]);
+			log.info("tileSize_m: " + tileSize_m);
+			
+		} else {
 
-		RunRuhrgebietScenario ruhrgebietScenarioRunner = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, configFileName });
+			outputDirectory = "/runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
+			runId = "run0_bc-ohne-RSV";
+			
+//			outputDirectory = "/Users/ihab/Documents/workspace/runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
+//			runId = "run3_gesundeStadt-mit-RSV";
+			
+			tileSize_m = 5000;
+		}
+				
+		AccessibilityComputationRuhr accessibilities = new AccessibilityComputationRuhr();
+		accessibilities.run(outputDirectory, runId, tileSize_m);
+	}
+	
+	private void run(String outputDirectory, String runId, int tileSize_m) {
+		
+		String dirSubString = "";
+		if (downsampling) {
+			dirSubString = "downsampling=" + downsampling + "_";
+		}
+		final String accessibilityOutputFolder = "accessibility_" + dirSubString + "tileSize=" + tileSize_m + "/";	
+		if (!outputDirectory.endsWith("/")) outputDirectory = outputDirectory + "/";
+		
+		RunRuhrgebietScenario ruhrgebietScenarioRunner = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, outputDirectory + runId + ".output_config.xml" });
 		
 		Config config = ruhrgebietScenarioRunner.prepareConfig();
-
-		// Alternative A: use a facility file which is generated externaly, e.g. based on OSM
-//		config.facilities().setInputFile(new File(facilitiesFileName).getAbsolutePath());
-		
-		// Alternative B: generate facilities based on the activities in the plans file, see below...
 		config.facilities().setFacilitiesSource(FacilitiesSource.setInScenario);
-
-		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-		config.controler().setFirstIteration(0);
-		config.controler().setLastIteration(0);
-		config.controler().setOutputDirectory(accessibilityOutputFolder);
+		config.plans().setInputFile(outputDirectory + runId + ".output_plans.xml.gz");
+		config.network().setInputFile(outputDirectory + runId + ".output_network.xml.gz");
+		config.transit().setTransitScheduleFile(outputDirectory + runId + ".output_transitSchedule.xml.gz");
+		config.transit().setVehiclesFile(outputDirectory + runId + ".output_transitVehicles.xml.gz");
+		config.vehicles().setVehiclesFile(outputDirectory + runId + ".output_vehicles.xml.gz");
+		config.controler().setFirstIteration(config.controler().getLastIteration());
+		config.controler().setLastIteration(config.controler().getLastIteration());
+		config.controler().setOutputDirectory(outputDirectory + accessibilityOutputFolder);
 		
 		AccessibilityConfigGroup acg = ConfigUtils.addOrGetModule(config, AccessibilityConfigGroup.class);
 		acg.setTileSize_m(tileSize_m);
 		acg.setAreaOfAccessibilityComputation(AreaOfAccesssibilityComputation.fromBoundingBox);
 		acg.setEnvelope(envelope);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, true); // car freespeed accessibility, should work
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, false); // congested car based accessibility, should work as well
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, false); // teleported walk mode, should work as well
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, false); // TODO: check!
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, false); // TODO: check!
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, computeFreespeedAccessibility);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, computeCarAccessibility);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, computeWalkAccessibility); 
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, computePtAccessibility); 
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, computeBikeAccessibility);
 		
 		Scenario scenario = ruhrgebietScenarioRunner.prepareScenario();
 		
-		boolean downsampling = true;
 		// down-sampling the scenario
 		if (downsampling) {
 			final double sample = 0.1;
 			downsample( scenario.getPopulation().getPersons(), sample ) ;
-			config.qsim().setFlowCapFactor( config.qsim().getFlowCapFactor()*sample );
-			config.qsim().setStorageCapFactor( config.qsim().getStorageCapFactor()*sample );
+			config.qsim().setFlowCapFactor( config.qsim().getFlowCapFactor() * sample );
+			config.qsim().setStorageCapFactor( config.qsim().getStorageCapFactor() * sample );
 		}
 		
 		String activityConsideredForAccessibilityComputation = "";
 		for (String consideredActivityPrefix : consideredActivityTypePrefixes) {
-			activityConsideredForAccessibilityComputation = activityConsideredForAccessibilityComputation + "_" + consideredActivityPrefix;
+			if (activityConsideredForAccessibilityComputation.length() > 0) activityConsideredForAccessibilityComputation = activityConsideredForAccessibilityComputation + "_";
+			activityConsideredForAccessibilityComputation = activityConsideredForAccessibilityComputation + consideredActivityPrefix + "*";
 		}
 		
 		for (Person person : scenario.getPopulation().getPersons().values()) {
@@ -168,17 +191,16 @@ public class AccessibilityComputationRuhr {
 
 			String osName = System.getProperty("os.name");
 			String workingDirectory = config.controler().getOutputDirectory();
-			for (String actType : consideredActivityTypePrefixes) {
-				String actSpecificWorkingDirectory = workingDirectory + actType + "/";
-				for (Modes4Accessibility mode : acg.getIsComputingMode()) {
-					VisualizationUtils.createQGisOutputGraduatedStandardColorRange(actType, mode.toString(), envelope, workingDirectory,
-							config.global().getCoordinateSystem(), includeDensityLayer, lowerBound, upperBound, range, tileSize_m, populationThreshold);
-					VisualizationUtils.createSnapshot(actSpecificWorkingDirectory, mode.toString(), osName);
-				}
+			
+			String actSpecificWorkingDirectory = workingDirectory + activityConsideredForAccessibilityComputation + "/";
+			for (Modes4Accessibility mode : acg.getIsComputingMode()) {
+				VisualizationUtils.createQGisOutputGraduatedStandardColorRange(activityConsideredForAccessibilityComputation, mode.toString(), envelope, workingDirectory,
+						config.global().getCoordinateSystem(), includeDensityLayer, lowerBound, upperBound, range, tileSize_m, populationThreshold);
+				VisualizationUtils.createSnapshot(actSpecificWorkingDirectory, mode.toString(), osName);
 			}
 		}
 	}
-	
+
 	private static void downsample( final Map<Id<Person>, ? extends Person> map, final double sample ) {
 		final Random rnd = MatsimRandom.getLocalInstance();
 		log.warn( "map size before=" + map.size() ) ;
