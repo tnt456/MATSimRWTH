@@ -81,13 +81,13 @@ public class AccessibilityComputationRuhr {
 			
 		} else {
 
-			outputDirectory = "/runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
+			outputDirectory = "../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
 			runId = "run0_bc-ohne-RSV";
 			
-//			outputDirectory = "/Users/ihab/Documents/workspace/runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
+//			outputDirectory = "../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
 //			runId = "run3_gesundeStadt-mit-RSV";
 			
-			tileSize_m = 5000;
+			tileSize_m = 10000;
 		}
 				
 		AccessibilityComputationRuhr accessibilities = new AccessibilityComputationRuhr();
@@ -107,11 +107,11 @@ public class AccessibilityComputationRuhr {
 		
 		Config config = ruhrgebietScenarioRunner.prepareConfig();
 		config.facilities().setFacilitiesSource(FacilitiesSource.setInScenario);
-		config.plans().setInputFile(outputDirectory + runId + ".output_plans.xml.gz");
-		config.network().setInputFile(outputDirectory + runId + ".output_network.xml.gz");
-		config.transit().setTransitScheduleFile(outputDirectory + runId + ".output_transitSchedule.xml.gz");
-		config.transit().setVehiclesFile(outputDirectory + runId + ".output_transitVehicles.xml.gz");
-		config.vehicles().setVehiclesFile(outputDirectory + runId + ".output_vehicles.xml.gz");
+		config.plans().setInputFile(runId + ".output_plans.xml.gz");
+		config.network().setInputFile(runId + ".output_network.xml.gz");
+		config.transit().setTransitScheduleFile(runId + ".output_transitSchedule.xml.gz");
+		config.transit().setVehiclesFile(runId + ".output_transitVehicles.xml.gz");
+		config.vehicles().setVehiclesFile(runId + ".output_vehicles.xml.gz");
 		config.controler().setFirstIteration(config.controler().getLastIteration());
 		config.controler().setLastIteration(config.controler().getLastIteration());
 		config.controler().setOutputDirectory(outputDirectory + accessibilityOutputFolder);
