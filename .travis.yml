@@ -5,7 +5,7 @@ dist: trusty
 
 env:
   global:
-    - MAVEN_OPTS="-Xmx12g"
+    - MAVEN_OPTS="-Xmx6g"
   matrix:
     - TEST=RunRuhrgebietScenarioTest#test0
     - TEST=RunRuhrgebietScenarioTest#test1
