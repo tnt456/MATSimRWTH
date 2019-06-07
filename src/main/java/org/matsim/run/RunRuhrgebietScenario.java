@@ -19,12 +19,18 @@
 
 package org.matsim.run;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.matsim.analysis.ScoreStats;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.contrib.bicycle.BicycleConfigGroup;
+import org.matsim.contrib.bicycle.BicycleLinkSpeedCalculator;
+import org.matsim.contrib.bicycle.BicycleModule;
+import org.matsim.contrib.noise.NoiseConfigGroup;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.CommandLine;
 import org.matsim.core.config.CommandLine.ConfigurationException;
@@ -127,6 +133,10 @@ public class RunRuhrgebietScenario {
             }
         });
         
+        // bicycle module
+        BicycleModule bicycleModule = new BicycleModule(scenario);
+		controler.addOverridingModule(bicycleModule);
+        
         // set different speed levels for bike highways
         controler.addOverridingQSimModule(new AbstractQSimModule() {
 
@@ -139,7 +149,7 @@ public class RunRuhrgebietScenario {
                     @Override
                     public QNetworkFactory get() {
                         final ConfigurableQNetworkFactory factory = new ConfigurableQNetworkFactory(events, scenario);
-                        factory.setLinkSpeedCalculator(new BikeLinkSpeedCalculator());
+                        factory.setLinkSpeedCalculator(new BicycleLinkSpeedCalculator(scenario));
                         return factory;
                     }
                 });
@@ -177,9 +187,18 @@ public class RunRuhrgebietScenario {
     }
 
     public Config prepareConfig(ConfigGroup... customModules) {
-
+    	
+    	List<ConfigGroup> modules = new ArrayList<>();		
+		modules.add(new BicycleConfigGroup());
+		
+		for (ConfigGroup module : customModules) {
+			modules.add(module);
+		}
+		
+		ConfigGroup[] modulesArray = new ConfigGroup[modules.size()];
+    	
         OutputDirectoryLogging.catchLogEntries();
-        config = ConfigUtils.loadConfig( configFileName, customModules);
+        config = ConfigUtils.loadConfig( configFileName, modules.toArray(modulesArray));
         
         config.plansCalcRoute().setInsertingAccessEgressWalk(true);
         config.qsim().setUsingTravelTimeCheckInTeleportation(true);
@@ -200,8 +219,11 @@ public class RunRuhrgebietScenario {
         addTypicalDurations("leisure", minDuration, maxDuration, difference);
         addTypicalDurations("shopping", minDuration, maxDuration, difference);
         addTypicalDurations("other", minDuration, maxDuration, difference);
-        
         // TODO: for next release: define opening and closing times! ihab April'19
+        
+        // bicycle config group
+		BicycleConfigGroup bicycleConfigGroup = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
+		bicycleConfigGroup.setBicycleMode("bike");
 
         if (cmd != null) {
 			try {
