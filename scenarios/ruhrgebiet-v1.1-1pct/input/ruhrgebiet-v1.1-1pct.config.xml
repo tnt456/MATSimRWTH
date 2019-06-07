@@ -7,8 +7,8 @@
 	<module name="controler" >
 		<param name="lastIteration" value="500" />
 		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
-		<param name="runId" value="ruhrgebiet-v1.0-1pct" />
-		<param name="outputDirectory" value="./output_ruhrgebiet-v1.0-1pct/" />
+		<param name="runId" value="ruhrgebiet-v1.1-1pct" />
+		<param name="outputDirectory" value="./output_ruhrgebiet-v1.1-1pct/" />
 		<param name="writeEventsInterval" value="100" />
 		<param name="writePlansInterval" value="100" />
 	</module>
@@ -18,7 +18,7 @@
 		<param name="numberOfThreads" value="8" />
 	</module>
 	<module name="network" >
-		<param name="inputNetworkFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-network-without-RSV.xml.gz" />
+		<param name="inputNetworkFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-network-without-RSV.xml.gz" />
 	</module>
 	<module name="plans" >
 		<param name="inputPlansFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-1pct.plans.gz" />
