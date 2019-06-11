@@ -27,6 +27,8 @@ import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Envelope;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
@@ -35,6 +37,8 @@ import org.matsim.contrib.accessibility.AccessibilityConfigGroup;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup.AreaOfAccesssibilityComputation;
 import org.matsim.contrib.accessibility.Modes4Accessibility;
 import org.matsim.contrib.accessibility.utils.VisualizationUtils;
+import org.matsim.contrib.bicycle.BicycleConfigGroup;
+import org.matsim.contrib.bicycle.BicycleLabels;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.FacilitiesConfigGroup.FacilitiesSource;
@@ -48,8 +52,8 @@ import org.matsim.run.RunRuhrgebietScenario;
 /**
  * @author dziemke, ikaddoura
  */
-public class AccessibilityComputationRuhr {
-	private static final Logger log = Logger.getLogger( AccessibilityComputationRuhr.class ) ;
+public class RunAccessibilityComputationRuhr {
+	private static final Logger log = Logger.getLogger( RunAccessibilityComputationRuhr.class ) ;
 	
 	private final boolean downsampling = false;
 	private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
@@ -87,10 +91,10 @@ public class AccessibilityComputationRuhr {
 //			outputDirectory = "../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
 //			runId = "run3_gesundeStadt-mit-RSV";
 			
-			tileSize_m = 10000;
+			tileSize_m = 20000;
 		}
 				
-		AccessibilityComputationRuhr accessibilities = new AccessibilityComputationRuhr();
+		RunAccessibilityComputationRuhr accessibilities = new RunAccessibilityComputationRuhr();
 		accessibilities.run(outputDirectory, runId, tileSize_m);
 	}
 	
@@ -126,7 +130,17 @@ public class AccessibilityComputationRuhr {
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, computePtAccessibility); 
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, computeBikeAccessibility);
 		
+		BicycleConfigGroup bcg = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
+		bcg.setBicycleMode(TransportMode.bike);
+		
 		Scenario scenario = ruhrgebietScenarioRunner.prepareScenario();
+		
+		// bicycle contrib requires the attribute "bicycleInfrastructureSpeedFactor" instead of "bike_speed_factor"
+		for (Link link : scenario.getNetwork().getLinks().values()) {
+			if (link.getAttributes().getAttribute("bike_speed_factor") != null) {
+				link.getAttributes().putAttribute(BicycleLabels.BICYCLE_INFRASTRUCTURE_SPEED_FACTOR, link.getAttributes().getAttribute("bike_speed_factor"));
+			}
+		}
 		
 		// down-sampling the scenario
 		if (downsampling) {
