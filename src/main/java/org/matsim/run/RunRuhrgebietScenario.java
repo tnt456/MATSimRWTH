@@ -19,10 +19,9 @@
 
 package org.matsim.run;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import org.apache.log4j.Logger;
 import org.matsim.analysis.ScoreStats;
 import org.matsim.api.core.v01.Scenario;
@@ -30,7 +29,6 @@ import org.matsim.api.core.v01.TransportMode;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
 import org.matsim.contrib.bicycle.BicycleLinkSpeedCalculator;
 import org.matsim.contrib.bicycle.BicycleModule;
-import org.matsim.contrib.noise.NoiseConfigGroup;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.CommandLine;
 import org.matsim.core.config.CommandLine.ConfigurationException;
@@ -46,10 +44,9 @@ import org.matsim.core.mobsim.qsim.qnetsimengine.ConfigurableQNetworkFactory;
 import org.matsim.core.mobsim.qsim.qnetsimengine.QNetworkFactory;
 import org.matsim.core.scenario.ScenarioUtils;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
-import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class RunRuhrgebietScenario {
 	
@@ -149,7 +146,7 @@ public class RunRuhrgebietScenario {
                     @Override
                     public QNetworkFactory get() {
                         final ConfigurableQNetworkFactory factory = new ConfigurableQNetworkFactory(events, scenario);
-                        factory.setLinkSpeedCalculator(new BicycleLinkSpeedCalculator(scenario));
+						factory.setLinkSpeedCalculator(new BicycleLinkSpeedCalculator(scenario));
                         return factory;
                     }
                 });
