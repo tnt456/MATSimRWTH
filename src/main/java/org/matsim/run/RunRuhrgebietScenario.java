@@ -20,16 +20,12 @@
 package org.matsim.run;
 
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.apache.log4j.Logger;
 import org.matsim.analysis.ScoreStats;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
-import org.matsim.contrib.bicycle.BicycleLinkSpeedCalculator;
-import org.matsim.contrib.bicycle.BicycleModule;
-import org.matsim.core.api.experimental.events.EventsManager;
+import org.matsim.contrib.bicycle.Bicycles;
 import org.matsim.core.config.CommandLine;
 import org.matsim.core.config.CommandLine.ConfigurationException;
 import org.matsim.core.config.Config;
@@ -40,12 +36,11 @@ import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.mobsim.qsim.AbstractQSimModule;
-import org.matsim.core.mobsim.qsim.qnetsimengine.ConfigurableQNetworkFactory;
-import org.matsim.core.mobsim.qsim.qnetsimengine.QNetworkFactory;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class RunRuhrgebietScenario {
@@ -130,29 +125,8 @@ public class RunRuhrgebietScenario {
                 addTravelDisutilityFactoryBinding(TransportMode.ride).to(carTravelDisutilityFactoryKey());
             }
         });
-        
-        // bicycle module
-        BicycleModule bicycleModule = new BicycleModule(scenario);
-		controler.addOverridingModule(bicycleModule);
-        
-        // set different speed levels for bike highways
-        controler.addOverridingQSimModule(new AbstractQSimModule() {
 
-            @Override
-            protected void configureQSim() {
-                bind(QNetworkFactory.class).toProvider(new Provider<QNetworkFactory>() {
-                    @Inject
-                    private EventsManager events;
-
-                    @Override
-                    public QNetworkFactory get() {
-                        final ConfigurableQNetworkFactory factory = new ConfigurableQNetworkFactory(events, scenario);
-						factory.setLinkSpeedCalculator(new BicycleLinkSpeedCalculator(scenario));
-                        return factory;
-                    }
-                });
-            }
-        });
+		Bicycles.addAsOverridingModule(controler);
 
         for ( AbstractModule overridingModule : overridingModules ) {
 			controler.addOverridingModule( overridingModule );
@@ -185,13 +159,16 @@ public class RunRuhrgebietScenario {
     }
 
     public Config prepareConfig(ConfigGroup... customModules) {
-    	
-    	List<ConfigGroup> modules = new ArrayList<>();		
-		modules.add(new BicycleConfigGroup());
-		
-		for (ConfigGroup module : customModules) {
-			modules.add(module);
-		}
+
+		List<ConfigGroup> modules = new ArrayList<>();
+
+		// add a bicycle config group and configure it with "bike" as mode identifier and 24.6km/h as max speed
+		BicycleConfigGroup bikeConfigGroup = new BicycleConfigGroup();
+		bikeConfigGroup.setBicycleMode(TransportMode.bike);
+		bikeConfigGroup.setMaxBicycleSpeedForRouting(6.84);
+		modules.add(bikeConfigGroup);
+
+		Collections.addAll(modules, customModules);
 		
 		ConfigGroup[] modulesArray = new ConfigGroup[modules.size()];
     	
@@ -218,10 +195,6 @@ public class RunRuhrgebietScenario {
         addTypicalDurations("shopping", minDuration, maxDuration, difference);
         addTypicalDurations("other", minDuration, maxDuration, difference);
         // TODO: for next release: define opening and closing times! ihab April'19
-        
-        // bicycle config group
-		BicycleConfigGroup bicycleConfigGroup = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
-		bicycleConfigGroup.setBicycleMode("bike");
 
         if (cmd != null) {
 			try {
