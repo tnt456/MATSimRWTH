@@ -16,11 +16,7 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.analysis;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Map;
+package org.matsim.ruhrgebiet.analysis;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -37,6 +33,10 @@ import org.matsim.contrib.emissions.types.Pollutant;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author amit, ihab
@@ -61,8 +61,8 @@ public class GenerateAirPollutionSpatialPlots {
     }
 
 	public static void main(String[] args) {
-		
-		String rootDirectory = null;
+
+		String rootDirectory;
 		
 		if (args.length == 1) {
 			rootDirectory = args[0];
@@ -88,7 +88,7 @@ public class GenerateAirPollutionSpatialPlots {
 
     private void writeEmissionsToCSV(String configPath, String eventsPath, String outputPath, String runDir, String runId) {
 
-        Config config = ConfigUtils.loadConfig(configPath.toString());
+		Config config = ConfigUtils.loadConfig(configPath);
 		config.plans().setInputFile(null);
 		config.transit().setTransitScheduleFile(null);
 		config.transit().setVehiclesFile(null);
@@ -109,7 +109,7 @@ public class GenerateAirPollutionSpatialPlots {
                 .withGridType(EmissionGridAnalyzer.GridType.Square)
                 .build();
 
-        TimeBinMap<Grid<Map<Pollutant, Double>>> timeBins = analyzer.process(eventsPath.toString());
+		TimeBinMap<Grid<Map<Pollutant, Double>>> timeBins = analyzer.process(eventsPath);
 
         log.info("Writing to csv...");
         writeGridToCSV(timeBins, Pollutant.NOX, outputPath);
@@ -117,7 +117,7 @@ public class GenerateAirPollutionSpatialPlots {
 
     private void writeGridToCSV(TimeBinMap<Grid<Map<Pollutant, Double>>> bins, Pollutant pollutant, String outputPath) {
 
-        try (CSVPrinter printer = new CSVPrinter(new FileWriter(outputPath.toString()), CSVFormat.TDF)) {
+		try (CSVPrinter printer = new CSVPrinter(new FileWriter(outputPath), CSVFormat.TDF)) {
             printer.printRecord("timeBinStartTime", "centroidX", "centroidY", "weight");
 
             for (TimeBinMap.TimeBin<Grid<Map<Pollutant, Double>>> bin : bins.getTimeBins()) {

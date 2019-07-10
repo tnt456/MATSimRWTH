@@ -16,12 +16,7 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.analysis;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+package org.matsim.ruhrgebiet.analysis;
 
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Envelope;
@@ -38,7 +33,7 @@ import org.matsim.contrib.accessibility.AccessibilityConfigGroup.AreaOfAccesssib
 import org.matsim.contrib.accessibility.Modes4Accessibility;
 import org.matsim.contrib.accessibility.utils.VisualizationUtils;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
-import org.matsim.contrib.bicycle.BicycleLabels;
+import org.matsim.contrib.bicycle.BicycleUtils;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.FacilitiesConfigGroup.FacilitiesSource;
@@ -47,25 +42,23 @@ import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.facilities.ActivityFacility;
 import org.matsim.facilities.FacilitiesFromPopulation;
-import org.matsim.run.RunRuhrgebietScenario;
+import org.matsim.ruhrgebiet.run.RunRuhrgebietScenario;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * @author dziemke, ikaddoura
  */
 public class RunAccessibilityComputationRuhr {
 	private static final Logger log = Logger.getLogger( RunAccessibilityComputationRuhr.class ) ;
-	
-	private final boolean downsampling = false;
+
 	private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
 //	private final Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
-	private final List<String> consideredActivityTypePrefixes = Arrays.asList(new String[]{"work","other","education","leisure"});
-	private final boolean createQGisOutput = true;
-	private final boolean computeFreespeedAccessibility = true;
-	private final boolean computeCarAccessibility = true;
-	private final boolean computeWalkAccessibility = true;
-	private final boolean computePtAccessibility = true;
-	private final boolean computeBikeAccessibility = true;
-	
+private final List<String> consideredActivityTypePrefixes = Arrays.asList("work", "other", "education", "leisure");
+
 	public static void main(String[] args) {
 		
 		String outputDirectory;
@@ -95,21 +88,19 @@ public class RunAccessibilityComputationRuhr {
 		}
 				
 		RunAccessibilityComputationRuhr accessibilities = new RunAccessibilityComputationRuhr();
-		accessibilities.run(outputDirectory, runId, tileSize_m);
+		accessibilities.run(outputDirectory, runId, tileSize_m, false);
 	}
-	
-	private void run(String outputDirectory, String runId, int tileSize_m) {
+
+	private void run(String outputDirectory, String runId, int tileSize_m, boolean downsampling) {
 		
 		String dirSubString = "";
 		if (downsampling) {
 			dirSubString = "downsampling=" + downsampling + "_";
 		}
-		final String accessibilityOutputFolder = "accessibility_" + dirSubString + "tileSize=" + tileSize_m + "/";	
+		final String accessibilityOutputFolder = "accessibility_" + dirSubString + "tileSize=" + tileSize_m + "/";
 		if (!outputDirectory.endsWith("/")) outputDirectory = outputDirectory + "/";
-		
-		RunRuhrgebietScenario ruhrgebietScenarioRunner = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, outputDirectory + runId + ".output_config.xml" });
-		
-		Config config = ruhrgebietScenarioRunner.prepareConfig();
+
+		Config config = RunRuhrgebietScenario.prepareConfig(outputDirectory + runId + ".output_config.xml");
 		config.facilities().setFacilitiesSource(FacilitiesSource.setInScenario);
 		config.plans().setInputFile(runId + ".output_plans.xml.gz");
 		config.network().setInputFile(runId + ".output_network.xml.gz");
@@ -124,21 +115,26 @@ public class RunAccessibilityComputationRuhr {
 		acg.setTileSize_m(tileSize_m);
 		acg.setAreaOfAccessibilityComputation(AreaOfAccesssibilityComputation.fromBoundingBox);
 		acg.setEnvelope(envelope);
+		boolean computeFreespeedAccessibility = true;
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, computeFreespeedAccessibility);
+		boolean computeCarAccessibility = true;
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, computeCarAccessibility);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, computeWalkAccessibility); 
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, computePtAccessibility); 
+		boolean computeWalkAccessibility = true;
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, computeWalkAccessibility);
+		boolean computePtAccessibility = true;
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, computePtAccessibility);
+		boolean computeBikeAccessibility = true;
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, computeBikeAccessibility);
 		
 		BicycleConfigGroup bcg = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
 		bcg.setBicycleMode(TransportMode.bike);
-		
-		Scenario scenario = ruhrgebietScenarioRunner.prepareScenario();
+
+		Scenario scenario = RunRuhrgebietScenario.prepareScenario(config);
 		
 		// bicycle contrib requires the attribute "bicycleInfrastructureSpeedFactor" instead of "bike_speed_factor"
 		for (Link link : scenario.getNetwork().getLinks().values()) {
 			if (link.getAttributes().getAttribute("bike_speed_factor") != null) {
-				link.getAttributes().putAttribute(BicycleLabels.BICYCLE_INFRASTRUCTURE_SPEED_FACTOR, link.getAttributes().getAttribute("bike_speed_factor"));
+				link.getAttributes().putAttribute(BicycleUtils.BICYCLE_INFRASTRUCTURE_SPEED_FACTOR, link.getAttributes().getAttribute("bike_speed_factor"));
 			}
 		}
 		
@@ -149,11 +145,12 @@ public class RunAccessibilityComputationRuhr {
 			config.qsim().setFlowCapFactor( config.qsim().getFlowCapFactor() * sample );
 			config.qsim().setStorageCapFactor( config.qsim().getStorageCapFactor() * sample );
 		}
-		
-		String activityConsideredForAccessibilityComputation = "";
+
+		StringBuilder activityConsideredForAccessibilityComputation = new StringBuilder();
 		for (String consideredActivityPrefix : consideredActivityTypePrefixes) {
-			if (activityConsideredForAccessibilityComputation.length() > 0) activityConsideredForAccessibilityComputation = activityConsideredForAccessibilityComputation + "_";
-			activityConsideredForAccessibilityComputation = activityConsideredForAccessibilityComputation + consideredActivityPrefix + "*";
+			if (activityConsideredForAccessibilityComputation.length() > 0)
+				activityConsideredForAccessibilityComputation.append("_");
+			activityConsideredForAccessibilityComputation.append(consideredActivityPrefix).append("*");
 		}
 		
 		for (Person person : scenario.getPopulation().getPersons().values()) {
@@ -163,15 +160,15 @@ public class RunAccessibilityComputationRuhr {
 						Activity act = (Activity) pE;
 						for (String consideredActivityTypePrefix : consideredActivityTypePrefixes) {
 							if (act.getType().startsWith(consideredActivityTypePrefix)) {
-								act.setType(activityConsideredForAccessibilityComputation);
+								act.setType(activityConsideredForAccessibilityComputation.toString());
 							}
 						}
 					}
 				}
 			}
 		}
-		
-		ActivityParams actParams = new ActivityParams(activityConsideredForAccessibilityComputation);
+
+		ActivityParams actParams = new ActivityParams(activityConsideredForAccessibilityComputation.toString());
 		actParams.setTypicalDuration(8 * 3600.); // shouldn't have any effect in the accessibility computation
 		config.planCalcScore().addActivityParams(actParams);
 		
@@ -186,16 +183,17 @@ public class RunAccessibilityComputationRuhr {
 				scenario.getActivityFacilities().addActivityFacility(facility);
 			}
 		}
-		
-		org.matsim.core.controler.Controler controler = ruhrgebietScenarioRunner.prepareControler();
+
+		org.matsim.core.controler.Controler controler = RunRuhrgebietScenario.prepareControler(scenario);
 		
 		AccessibilityModuleRuhr module = new AccessibilityModuleRuhr();
-		module.setConsideredActivityType(activityConsideredForAccessibilityComputation);
+		module.setConsideredActivityType(activityConsideredForAccessibilityComputation.toString());
 		controler.addOverridingModule(module);
-		
-		ruhrgebietScenarioRunner.run();
+
+		controler.run();
 		
 		// QGis
+		boolean createQGisOutput = true;
 		if (createQGisOutput) {
 			final boolean includeDensityLayer = false;
 			final Integer range = 9; // In the current implementation, this must always be 9
@@ -208,7 +206,7 @@ public class RunAccessibilityComputationRuhr {
 			
 			String actSpecificWorkingDirectory = workingDirectory + activityConsideredForAccessibilityComputation + "/";
 			for (Modes4Accessibility mode : acg.getIsComputingMode()) {
-				VisualizationUtils.createQGisOutputGraduatedStandardColorRange(activityConsideredForAccessibilityComputation, mode.toString(), envelope, workingDirectory,
+				VisualizationUtils.createQGisOutputGraduatedStandardColorRange(activityConsideredForAccessibilityComputation.toString(), mode.toString(), envelope, workingDirectory,
 						config.global().getCoordinateSystem(), includeDensityLayer, lowerBound, upperBound, range, tileSize_m, populationThreshold);
 				VisualizationUtils.createSnapshot(actSpecificWorkingDirectory, mode.toString(), osName);
 			}

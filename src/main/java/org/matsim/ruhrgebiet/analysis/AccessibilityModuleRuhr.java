@@ -17,17 +17,9 @@
  *                                                                         *
  * *********************************************************************** */
 
-package org.matsim.analysis;
+package org.matsim.ruhrgebiet.analysis;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
-import javax.inject.Provider;
-
+import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -35,17 +27,9 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.contrib.accessibility.AccessibilityCalculator;
-import org.matsim.contrib.accessibility.AccessibilityConfigGroup;
+import org.matsim.contrib.accessibility.*;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup.AreaOfAccesssibilityComputation;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup.MeasurePointGeometryProvision;
-import org.matsim.contrib.accessibility.AccessibilityContributionCalculator;
-import org.matsim.contrib.accessibility.AccessibilityShutdownListenerV4;
-import org.matsim.contrib.accessibility.ConstantSpeedAccessibilityExpContributionCalculator;
-import org.matsim.contrib.accessibility.LeastCostPathCalculatorAccessibilityContributionCalculator;
-import org.matsim.contrib.accessibility.Modes4Accessibility;
-import org.matsim.contrib.accessibility.NetworkModeAccessibilityExpContributionCalculator;
-import org.matsim.contrib.accessibility.TripRouterAccessibilityContributionCalculator;
 import org.matsim.contrib.accessibility.gis.GridUtils;
 import org.matsim.contrib.accessibility.interfaces.FacilityDataExchangeInterface;
 import org.matsim.contrib.accessibility.utils.AccessibilityUtils;
@@ -65,11 +49,11 @@ import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 import org.matsim.facilities.ActivityFacilities;
-import org.matsim.facilities.ActivityFacilitiesImpl;
 import org.matsim.facilities.ActivityFacility;
 import org.matsim.facilities.MatsimFacilitiesReader;
 
-import com.google.inject.Inject;
+import javax.inject.Provider;
+import java.util.*;
 
 /**
  * @author dziemke
@@ -106,7 +90,7 @@ public final class AccessibilityModuleRuhr extends AbstractModule {
 				crs = acg.getOutputCrs() ;
 				
 				ActivityFacilities opportunities = AccessibilityUtils.collectActivityFacilitiesWithOptionOfType(scenario, activityType);
-				Map<Id<ActivityFacility>, Geometry> measurePointGeometryMap = null;
+				Map<Id<ActivityFacility>, Geometry> measurePointGeometryMap;
 				final BoundingBox boundingBox;
 				
 				int tileSize_m = acg.getTileSize();
@@ -136,7 +120,7 @@ public final class AccessibilityModuleRuhr extends AbstractModule {
 					Scenario measuringPointsSc = ScenarioUtils.createScenario(ConfigUtils.createConfig());
 					String measuringPointsFile = ConfigUtils.addOrGetModule(config, AccessibilityConfigGroup.class ).getMeasuringPointsFile();
 					new MatsimFacilitiesReader(measuringPointsSc).readFile(measuringPointsFile);
-					measuringPoints = (ActivityFacilitiesImpl) AccessibilityUtils.collectActivityFacilitiesWithOptionOfType(measuringPointsSc, null);
+					measuringPoints = AccessibilityUtils.collectActivityFacilitiesWithOptionOfType(measuringPointsSc, null);
 					LOG.info("Using measuring points from file: " + measuringPointsFile);
 					
 				} else if (acg.getAreaOfAccessibilityComputation() == AreaOfAccesssibilityComputation.fromFacilitiesObject) {
@@ -184,7 +168,7 @@ public final class AccessibilityModuleRuhr extends AbstractModule {
 //				AccessibilityCalculator accessibilityCalculator = new AccessibilityCalculator(scenario, measuringPoints, network);
 				AccessibilityCalculator accessibilityCalculator = new AccessibilityCalculator(scenario, measuringPoints, bikeNetwork);
 				for (Modes4Accessibility mode : acg.getIsComputingMode()) {
-					AccessibilityContributionCalculator calculator = null ;
+					AccessibilityContributionCalculator calculator;
 					switch(mode) {
 					case bike:
 						final TravelTime bikeTravelTime = travelTimes.get(mode.name());
@@ -279,8 +263,8 @@ public final class AccessibilityModuleRuhr extends AbstractModule {
 		}
 		this.additionalFacs.put(facilities.getName(), facilities);
 	}
-	
-	public void setConsideredActivityType(String activityType) {
+
+	void setConsideredActivityType(String activityType) {
 		this.activityType = activityType ;
 	}
 }

@@ -166,7 +166,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.matsim.gui.MATSimGUI</mainClass>
+							<mainClass>org.matsim.ruhrgebiet.gui.MATSimGUI</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

@@ -17,7 +17,7 @@
  *                                                                         *
  * *********************************************************************** */
 
-package org.matsim.analysis;
+package org.matsim.ruhrgebiet.analysis;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -43,16 +43,16 @@ import org.matsim.vehicles.VehicleType;
 */
 
 public class RunOfflineAirPollutionAnalysis {
-	
-	final static String runDirectory = "path-to-run-directory/";	
-	final static String runId = "run-id";
 
-	final static String hbefaFileCold = "shared-svn/projects/detailedEval/matsim-input-files/hbefa-files/v3.2/EFA_ColdStart_vehcat_2005average.txt";
-	final static String hbefaFileWarm = "shared-svn/projects/detailedEval/matsim-input-files/hbefa-files/v3.2/EFA_HOT_vehcat_2005average.txt";
+	private final static String runDirectory = "path-to-run-directory/";
+	private final static String runId = "run-id";
+
+	private final static String hbefaFileCold = "shared-svn/projects/detailedEval/matsim-input-files/hbefa-files/v3.2/EFA_ColdStart_vehcat_2005average.txt";
+	private final static String hbefaFileWarm = "shared-svn/projects/detailedEval/matsim-input-files/hbefa-files/v3.2/EFA_HOT_vehcat_2005average.txt";
 	
 	public static void main(String[] args) {
-		
-		String rootDirectory = null;
+
+		String rootDirectory;
 		
 		if (args.length == 1) {
 			rootDirectory = args[0];
@@ -84,7 +84,7 @@ public class RunOfflineAirPollutionAnalysis {
 		// network
 		for (Link link : scenario.getNetwork().getLinks().values()) {
 
-			double freespeed = Double.NaN;
+			double freespeed;
 
 			if (link.getFreespeed() <= 13.888889) {
 				freespeed = link.getFreespeed() * 2;
@@ -149,7 +149,7 @@ public class RunOfflineAirPollutionAnalysis {
 				bind( EventsManager.class ).toInstance( eventsManager );
 				bind( EmissionModule.class ) ;
 			}
-		};;
+		};
 
 		com.google.inject.Injector injector = Injector.createInjector(config, module);
 

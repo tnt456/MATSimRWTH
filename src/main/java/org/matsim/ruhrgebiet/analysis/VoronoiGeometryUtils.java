@@ -16,14 +16,7 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.analysis;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+package org.matsim.ruhrgebiet.analysis;
 
 import org.apache.log4j.Logger;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -42,10 +35,12 @@ import org.matsim.facilities.ActivityFacility;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
+import java.util.*;
+
 /**
  * @author dziemke
  */
-public class VoronoiGeometryUtils {
+class VoronoiGeometryUtils {
 	private final static Logger LOG = Logger.getLogger(VoronoiGeometryUtils.class);
 	
 	private static GeometryFactory geometryFactory = new GeometryFactory();
@@ -130,7 +125,7 @@ public class VoronoiGeometryUtils {
 		return measurePointPolygons2;
 	}
 
-	static Collection<Geometry> determineVoronoiShapes(ActivityFacilities measuringPoints, BoundingBox box) {
+	private static Collection<Geometry> determineVoronoiShapes(ActivityFacilities measuringPoints, BoundingBox box) {
 		LOG.warn("Started creating Voronoi shapes.");
 		Collection<Coordinate> sites = new ArrayList<>();
 		
@@ -150,15 +145,14 @@ public class VoronoiGeometryUtils {
 		return geometries;
 	}
 
-	static Polygon createBoundingPolygon(BoundingBox box) {
+	private static Polygon createBoundingPolygon(BoundingBox box) {
 		Coordinate boundingBoxSW = new Coordinate(box.getXMin(), box.getYMin());
 		Coordinate boundingBoxSE = new Coordinate(box.getXMax(), box.getYMin());
 		Coordinate boundingBoxNE = new Coordinate(box.getXMax(), box.getYMax());
 		Coordinate boundingBoxNW = new Coordinate(box.getXMin(), box.getYMax());
 		Coordinate[] boundingBoxCoordinates = new Coordinate[]{boundingBoxSW, boundingBoxSE, boundingBoxNE, boundingBoxNW, boundingBoxSW};
 
-		Polygon boundingPolygon = geometryFactory.createPolygon(boundingBoxCoordinates);
-		return boundingPolygon;
+		return geometryFactory.createPolygon(boundingBoxCoordinates);
 	}
 	
 	static Collection<SimpleFeature> createFeaturesFromPolygons(Collection<Geometry> geometries) {
@@ -179,7 +173,7 @@ public class VoronoiGeometryUtils {
 	    return features;
 	}
 
-	static Collection<Geometry> cutPolygonsByBoundary(Collection<Polygon> polygons, Polygon boundingPolygon) {
+	private static Collection<Geometry> cutPolygonsByBoundary(Collection<Polygon> polygons, Polygon boundingPolygon) {
 		Collection<Geometry> cutPolygons = new LinkedList<>();
 		for (Polygon polygon : polygons) {
 			// Need to determine convex hull of geometry to prevent it from staying self-intersecting

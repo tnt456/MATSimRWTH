@@ -18,24 +18,11 @@
  * *********************************************************************** */
 package org.matsim.run;
 
-import static org.matsim.testcases.MatsimTestUtils.EPSILON;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.matsim.analysis.ScoreStatsControlerListener;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Person;
@@ -43,7 +30,17 @@ import org.matsim.core.config.Config;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.gbl.MatsimRandom;
+import org.matsim.ruhrgebiet.run.RunRuhrgebietScenario;
 import org.matsim.testcases.MatsimTestUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+
+import static org.junit.Assert.assertNotNull;
+import static org.matsim.testcases.MatsimTestUtils.EPSILON;
 
 /**
  * 
@@ -56,39 +53,21 @@ public class RunRuhrgebietScenarioTest {
 	@Rule public MatsimTestUtils utils = new MatsimTestUtils() ;
 
 	@Test
-	public final void test0() {
+	public final void prepareConfig() {
 		
 		String configFileName = "scenarios/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-1pct.config.xml";
 
-		try {
-			
-			RunRuhrgebietScenario runner0 = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, configFileName });
-			runner0.prepareConfig();
-			
-			RunRuhrgebietScenario runner1 = new RunRuhrgebietScenario(new String[]{ "--config-path", configFileName});
-			runner1.prepareConfig();
+		Config config = RunRuhrgebietScenario.prepareConfig(configFileName);
+		assertNotNull(config);
 
-			RunRuhrgebietScenario runner2 = new RunRuhrgebietScenario(new String[]{ configFileName });
-			runner2.prepareConfig();
-
-		} catch ( Exception ee ) {
-			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
-
-			// if one catches an exception, then one needs to explicitly fail the test:
-			Assert.fail();
-		}
 	}
 	
 	@Test
-	public final void test1() {
-		
+	public final void runScenarioOneIteration() {
+
 		String configFileName = "scenarios/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-1pct.config.xml";
 
-		try {
-
-			RunRuhrgebietScenario ruhrgebietScenarioRunner = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, configFileName });
-
-			Config config = ruhrgebietScenarioRunner.prepareConfig();
+		Config config = RunRuhrgebietScenario.prepareConfig(configFileName);
 			config.controler().setWriteEventsInterval(0);
 			config.controler().setLastIteration(0);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
@@ -97,14 +76,14 @@ public class RunRuhrgebietScenarioTest {
 			config.controler().setWritePlansInterval( 0 );
 			config.qsim().setNumberOfThreads( 1 );
 			config.global().setNumberOfThreads( 1 );
-			
-			Scenario scenario = ruhrgebietScenarioRunner.prepareScenario();
+
+		Scenario scenario = RunRuhrgebietScenario.prepareScenario(config);
 			final double sample = 0.01;
 			downsample( scenario.getPopulation().getPersons(), sample ) ;
 			config.qsim().setFlowCapFactor( config.qsim().getFlowCapFactor()*sample );
 			config.qsim().setStorageCapFactor( config.qsim().getStorageCapFactor()*sample );
-			
-			org.matsim.core.controler.Controler controler = ruhrgebietScenarioRunner.prepareControler();
+
+		org.matsim.core.controler.Controler controler = RunRuhrgebietScenario.prepareControler(scenario);
 			
 			final Id<Person> person1 = Id.createPersonId("1265160001");
 			final Id<Person> person2 = Id.createPersonId("1286397001");
@@ -120,8 +99,8 @@ public class RunRuhrgebietScenarioTest {
 					this.addEventHandlerBinding().toInstance(legAnalyzer);
 				}
 			});
-			
-			ruhrgebietScenarioRunner.run();
+
+		controler.run();
 
 			// modal split
 			
@@ -160,27 +139,15 @@ public class RunRuhrgebietScenarioTest {
 			
 //			Assert.assertEquals(1.2746698932141114, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
 //			Assert.assertEquals(1.10941588204182, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(0), EPSILON);
-
-		} catch ( Exception ee ) {
-			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
-
-			// if one catches an exception, then one needs to explicitly fail the test:
-			ee.printStackTrace();
-			Assert.fail();
-		}
 	}
 	
 	@Ignore // TODO: Make this test fit into travis-ci.
 	@Test
-	public final void test2() {
+	public final void runScenario20Iterations() {
 		
 		String configFileName = "scenarios/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-1pct.config.xml";
 
-		try {
-
-			RunRuhrgebietScenario ruhrgebietScenarioRunner = new RunRuhrgebietScenario(new String[]{ "--" + RunRuhrgebietScenario.CONFIG_PATH, configFileName });
-
-			Config config = ruhrgebietScenarioRunner.prepareConfig();
+		Config config = RunRuhrgebietScenario.prepareConfig(configFileName);
 			config.controler().setWriteEventsInterval(0);
 			config.controler().setLastIteration(20);
 			config.controler().setOutputDirectory( utils.getOutputDirectory() );
@@ -189,14 +156,14 @@ public class RunRuhrgebietScenarioTest {
 			config.controler().setWritePlansInterval( 0 );
 			config.qsim().setNumberOfThreads( 1 );
 			config.global().setNumberOfThreads( 1 );
-			
-			Scenario scenario = ruhrgebietScenarioRunner.prepareScenario();
+
+		Scenario scenario = RunRuhrgebietScenario.prepareScenario(config);
 			final double sample = 0.01;
 			downsample( scenario.getPopulation().getPersons(), sample ) ;
 			config.qsim().setFlowCapFactor( config.qsim().getFlowCapFactor()*sample );
-			config.qsim().setStorageCapFactor( config.qsim().getStorageCapFactor()*sample );			
-			
-			ruhrgebietScenarioRunner.run();
+		config.qsim().setStorageCapFactor(config.qsim().getStorageCapFactor() * sample);
+
+		RunRuhrgebietScenario.prepareControler(scenario).run();
 
 			// modal split
 			
@@ -211,14 +178,6 @@ public class RunRuhrgebietScenarioTest {
 			
 			// TODO: add score test
 //			Assert.assertEquals(xxx, ruhrgebietScenarioRunner.getScoreStats().getScoreHistory().get(ScoreStatsControlerListener.ScoreItem.average).get(20), EPSILON);
-
-		} catch ( Exception ee ) {
-			Logger.getLogger(this.getClass()).fatal("there was an exception: \n" + ee ) ;
-
-			// if one catches an exception, then one needs to explicitly fail the test:
-			ee.printStackTrace();
-			Assert.fail();
-		}
 	}
 	
 	private static void downsample( final Map<Id<Person>, ? extends Person> map, final double sample ) {
