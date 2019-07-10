@@ -103,8 +103,9 @@ public class RunRuhrgebietScenarioTest {
 		controler.run();
 
 			// modal split
-			
-			Map<String,Double> modestats = getModestats("test/output/org/matsim/run/RunRuhrgebietScenarioTest/test1/ruhrgebiet-v1.1-1pct.modestats.txt");
+
+
+		Map<String, Double> modestats = getModestats(utils.getOutputDirectory() + "ruhrgebiet-v1.1-1pct.modestats.txt");
 			Assert.assertEquals(0.09121245828698554,modestats.get("bike"),EPSILON);
 			Assert.assertEquals(0.3770856507230256,modestats.get("car"),EPSILON);
 			Assert.assertEquals(0.29699666295884314,modestats.get("pt"),EPSILON);
@@ -166,8 +167,8 @@ public class RunRuhrgebietScenarioTest {
 		RunRuhrgebietScenario.prepareControler(scenario).run();
 
 			// modal split
-			
-			Map<String,Double> modestats = getModestats("test/output/org/matsim/run/RunRuhrgebietScenarioTest/test1/ruhrgebiet-v1.1-1pct.modestats.txt");
+
+		Map<String, Double> modestats = getModestats(utils.getOutputDirectory() + "ruhrgebiet-v1.1-1pct.modestats.txt");
 			Assert.assertEquals(0.09121245828698554,modestats.get("bike"),0.05);
 			Assert.assertEquals(0.3770856507230256,modestats.get("car"),0.05);
 			Assert.assertEquals(0.29699666295884314,modestats.get("pt"),0.05);
