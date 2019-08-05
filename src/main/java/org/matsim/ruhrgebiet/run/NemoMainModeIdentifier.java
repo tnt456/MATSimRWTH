@@ -35,7 +35,7 @@ final class NemoMainModeIdentifier implements MainModeIdentifier {
 	public String identifyMainMode( final List<? extends PlanElement> tripElements) {
 		String mode = ((Leg) tripElements.get( 0 )).getMode();
 		if ( mode.equals( TransportMode.transit_walk )) {
-			return TransportMode.transit_walk ;
+			return TransportMode.pt ;
 		}
 		
 		if (mode.equals( TransportMode.non_network_walk )) {
