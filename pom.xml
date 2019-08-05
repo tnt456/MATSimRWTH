@@ -67,11 +67,18 @@
 		</dependency>
 		
 		<dependency>
+	    	<groupId>com.github.ikaddoura</groupId>
+	    	<artifactId>matsim-sbb-extensions</artifactId>
+	    	<version>fixPersonAttributesLookup-SNAPSHOT</version>
+	    	<!-- for now: use a forked version which is compatible with the latest MATSim version --> 
+		</dependency>
+		
+		<!-- <dependency>
          	<groupId>com.github.simunto</groupId>
            	<artifactId>matsim-sbb-extensions</artifactId>
            	<version>0.11.0-2018w44</version>
-			<!--(careful, this is not matsim, thus not ${matsim.version})-->
-        </dependency>
+			(careful, this is not matsim, thus not ${matsim.version})
+        </dependency> -->
         
         <dependency>
         	<groupId>org.matsim.contrib</groupId>
