@@ -21,12 +21,12 @@
 		<param name="inputNetworkFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-network-without-RSV.xml.gz" />
 	</module>
 	<module name="plans" >
-		<param name="inputPlansFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-1pct.plans.gz" />
+		<param name="inputPlansFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-1pct.plans.xml.gz" />
 		<param name="removingUnnecessaryPlanAttributes" value="false" />
 	</module>
 	<module name="vehicles" >
 		<param name="vehiclesFile"
-			   value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.0-mode-vehicles.xml.gz"/>
+			   value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-mode-vehicles.xml.gz"/>
 	</module>
 	<module name="transit" >
 		<param name="transitScheduleFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-transit-schedule.xml.gz" />
