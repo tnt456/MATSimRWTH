@@ -31,6 +31,7 @@ import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryLogging;
+import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import java.util.ArrayList;
@@ -107,6 +108,14 @@ public class RunRuhrgebietScenario {
 			public void install() {
 				addTravelTimeBinding(TransportMode.ride).to(networkTravelTime());
 				addTravelDisutilityFactoryBinding(TransportMode.ride).to(carTravelDisutilityFactoryKey());
+			}
+		});
+		// use our own main mode identifier
+		controler.addOverridingModule(new AbstractModule() {
+			
+			@Override
+			public void install() {
+				bind(MainModeIdentifier.class).to(NemoMainModeIdentifier.class).asEagerSingleton();
 			}
 		});
 
