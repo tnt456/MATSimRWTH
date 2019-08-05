@@ -116,6 +116,10 @@ public class RunAccessibilityComputationRuhr {
 			acg.setComputingAccessibilityForMode(Modes4Accessibility.car, true);
 		} else if (mode.equals(TransportMode.bike)) {
 			acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true);
+		} else if (mode.equals(TransportMode.pt)) {
+			acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, true);
+		} else if (mode.equals(TransportMode.walk)) {
+			acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, true);
 		} else {
 			throw new IllegalArgumentException("In this quickly fixed intermediate version, one can only run either car or bike separately.");
 		}
