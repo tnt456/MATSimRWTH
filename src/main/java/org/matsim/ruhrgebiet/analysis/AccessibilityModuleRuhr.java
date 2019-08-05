@@ -168,7 +168,7 @@ public final class AccessibilityModuleRuhr extends AbstractModule {
 
 				for (Modes4Accessibility mode : acg.getIsComputingMode()) {
 					AccessibilityContributionCalculator calculator;
-					if(mode.equals(TransportMode.car) || mode.equals(TransportMode.bike)) {
+					if(mode.equals(Modes4Accessibility.car) || mode.equals(Modes4Accessibility.bike)) {
 						final TravelTime travelTime = travelTimes.get(mode.name());
 						Gbl.assertNotNull(travelTime);
 						final TravelDisutilityFactory travelDisutilityFactory = travelDisutilityFactories.get(mode.name());

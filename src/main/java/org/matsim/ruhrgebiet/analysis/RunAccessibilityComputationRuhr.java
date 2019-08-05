@@ -55,8 +55,8 @@ import java.util.Random;
 public class RunAccessibilityComputationRuhr {
 	private static final Logger log = Logger.getLogger( RunAccessibilityComputationRuhr.class ) ;
 
-	private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
-	//private final Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
+	//private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
+	private final Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
 private final List<String> consideredActivityTypePrefixes = Arrays.asList("work", "other", "education", "leisure");
 
 	public static void main(String[] args) {
@@ -72,11 +72,11 @@ private final List<String> consideredActivityTypePrefixes = Arrays.asList("work"
 			tileSize_m = Integer.parseInt(args[2]);
 			log.info("tileSize_m: " + tileSize_m);
 		} else {
-			outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
-			runId = "run0_bc-ohne-RSV";
-//			outputDirectory = "../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
-//			runId = "run3_gesundeStadt-mit-RSV";
-			tileSize_m = 20000;
+			//outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
+			//runId = "run0_bc-ohne-RSV";
+			outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
+			runId = "run3_gesundeStadt-mit-RSV";
+			tileSize_m = 2000;
 		}
 				
 		RunAccessibilityComputationRuhr accessibilities = new RunAccessibilityComputationRuhr();
@@ -97,7 +97,7 @@ private final List<String> consideredActivityTypePrefixes = Arrays.asList("work"
 		config.network().setInputFile(runId + ".output_network.xml.gz");
 		config.transit().setTransitScheduleFile(runId + ".output_transitSchedule.xml.gz");
 		config.transit().setVehiclesFile(runId + ".output_transitVehicles.xml.gz");
-		config.vehicles().setVehiclesFile(runId + ".output_vehicles.xml.gz");
+		config.vehicles().setVehiclesFile("https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-mode-vehicles.xml.gz");
 		config.controler().setFirstIteration(config.controler().getLastIteration());
 		config.controler().setLastIteration(config.controler().getLastIteration());
 		config.controler().setOutputDirectory(outputDirectory + accessibilityOutputFolder);
@@ -107,11 +107,11 @@ private final List<String> consideredActivityTypePrefixes = Arrays.asList("work"
 		acg.setAreaOfAccessibilityComputation(AreaOfAccesssibilityComputation.fromBoundingBox);
 		acg.setEnvelope(envelope);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, false);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, true);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, false);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, false);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, false);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true);
-		
+
 		BicycleConfigGroup bcg = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
 		bcg.setBicycleMode(TransportMode.bike);
 
