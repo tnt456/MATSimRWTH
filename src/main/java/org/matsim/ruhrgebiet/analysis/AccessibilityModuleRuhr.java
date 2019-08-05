@@ -159,7 +159,7 @@ public final class AccessibilityModuleRuhr extends AbstractModule {
 					filter.filter(subNetwork, modeSet);
 				} else if (acg.getIsComputingMode().contains(Modes4Accessibility.bike)) {
 					TransportModeNetworkFilter filter = new TransportModeNetworkFilter(scenario.getNetwork());
-					modeSet.add(TransportMode.car);
+					modeSet.add(TransportMode.bike);
 					filter.filter(subNetwork, modeSet);
 				}
 				LOG.warn("sub-network for mode " + modeSet.toString() + " now has " + subNetwork.getNodes().size() + " nodes.");
