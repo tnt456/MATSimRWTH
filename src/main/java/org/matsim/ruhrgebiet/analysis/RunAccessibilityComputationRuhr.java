@@ -92,7 +92,7 @@ public class RunAccessibilityComputationRuhr {
 		if (downsampling) {
 			dirSubString = "downsampling=" + downsampling + "_";
 		}
-		final String accessibilityOutputFolder = "accessibility_" + dirSubString + "tileSize=" + tileSize_m + "/";
+		final String accessibilityOutputFolder = "accessibility_" + dirSubString + "tileSize=" + tileSize_m + "mode=" + mode + "/";
 		if (!outputDirectory.endsWith("/")) outputDirectory = outputDirectory + "/";
 
 		Config config = RunRuhrgebietScenario.prepareConfig(outputDirectory + runId + ".output_config_adjusted.xml");
