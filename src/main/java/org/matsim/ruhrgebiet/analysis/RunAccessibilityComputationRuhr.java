@@ -55,14 +55,15 @@ import java.util.Random;
 public class RunAccessibilityComputationRuhr {
 	private static final Logger log = Logger.getLogger( RunAccessibilityComputationRuhr.class ) ;
 
-	//private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
-	private final Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
-private final List<String> consideredActivityTypePrefixes = Arrays.asList("work", "other", "education", "leisure");
+	private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
+	//private final Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
+	private final List<String> consideredActivityTypePrefixes = Arrays.asList("work", "other", "education", "leisure");
 
 	public static void main(String[] args) {
 		String outputDirectory;
 		String runId;	
-		int tileSize_m;		
+		int tileSize_m;
+		String mode;
 		
 		if (args.length > 0) {
 			outputDirectory = args[0];
@@ -71,19 +72,22 @@ private final List<String> consideredActivityTypePrefixes = Arrays.asList("work"
 			log.info("runId: " + runId);
 			tileSize_m = Integer.parseInt(args[2]);
 			log.info("tileSize_m: " + tileSize_m);
+			mode = args[3];
+			log.info("mode: " + mode);
 		} else {
 			//outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
 			//runId = "run0_bc-ohne-RSV";
 			outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
 			runId = "run3_gesundeStadt-mit-RSV";
 			tileSize_m = 2000;
+			mode = TransportMode.bike;
 		}
 				
 		RunAccessibilityComputationRuhr accessibilities = new RunAccessibilityComputationRuhr();
-		accessibilities.run(outputDirectory, runId, tileSize_m, false);
+		accessibilities.run(outputDirectory, runId, tileSize_m, false, mode);
 	}
 
-	private void run(String outputDirectory, String runId, int tileSize_m, boolean downsampling) {
+	private void run(String outputDirectory, String runId, int tileSize_m, boolean downsampling, String mode) {
 		String dirSubString = "";
 		if (downsampling) {
 			dirSubString = "downsampling=" + downsampling + "_";
@@ -107,10 +111,15 @@ private final List<String> consideredActivityTypePrefixes = Arrays.asList("work"
 		acg.setAreaOfAccessibilityComputation(AreaOfAccesssibilityComputation.fromBoundingBox);
 		acg.setEnvelope(envelope);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, false);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, false);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, false);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, false);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true);
+		// Modes other than freespeed are set to false by default
+		if (mode.equals(TransportMode.car)) {
+			acg.setComputingAccessibilityForMode(Modes4Accessibility.car, true);
+		} else if (mode.equals(TransportMode.bike)) {
+			acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true);
+		} else {
+			throw new IllegalArgumentException("In this quickly fixed intermediate version, one can only run either car or bike separately.");
+		}
+
 
 		BicycleConfigGroup bcg = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
 		bcg.setBicycleMode(TransportMode.bike);
@@ -191,10 +200,10 @@ private final List<String> consideredActivityTypePrefixes = Arrays.asList("work"
 			String workingDirectory = config.controler().getOutputDirectory();
 			
 			String actSpecificWorkingDirectory = workingDirectory + activityConsideredForAccessibilityComputation + "/";
-			for (Modes4Accessibility mode : acg.getIsComputingMode()) {
+			for (Modes4Accessibility mode2 : acg.getIsComputingMode()) {
 				VisualizationUtils.createQGisOutputGraduatedStandardColorRange(activityConsideredForAccessibilityComputation.toString(), mode.toString(), envelope, workingDirectory,
 						config.global().getCoordinateSystem(), includeDensityLayer, lowerBound, upperBound, range, tileSize_m, populationThreshold);
-				VisualizationUtils.createSnapshot(actSpecificWorkingDirectory, mode.toString(), osName);
+				VisualizationUtils.createSnapshot(actSpecificWorkingDirectory, mode2.toString(), osName);
 			}
 		}
 	}
