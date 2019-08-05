@@ -106,7 +106,7 @@ public class RunRuhrgebietScenarioTest {
 
 
 		Map<String, Double> modestats = getModestats(utils.getOutputDirectory() + "ruhrgebiet-v1.1-1pct.modestats.txt");
-			Assert.assertEquals(0.09121245828698554,modestats.get("bike"),EPSILON);
+			Assert.assertEquals(0.09121245828698554,modestats.get("bicycle"),EPSILON);
 			Assert.assertEquals(0.3770856507230256,modestats.get("car"),EPSILON);
 			Assert.assertEquals(0.29699666295884314,modestats.get("pt"),EPSILON);
 			Assert.assertEquals(0.06229143492769744,modestats.get("walk"),EPSILON);
