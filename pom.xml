@@ -69,7 +69,8 @@
 		<dependency>
 	    	<groupId>com.github.ikaddoura</groupId>
 	    	<artifactId>matsim-sbb-extensions</artifactId>
-	    	<version>fixPersonAttributesLookup-SNAPSHOT</version>
+	    	<version>fixPersonAttributesLookup-80edb69292-1</version>
+
 	    	<!-- for now: use a forked version which is compatible with the latest MATSim version -->
 		</dependency>
 
