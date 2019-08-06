@@ -110,14 +110,6 @@ public class RunRuhrgebietScenario {
 				addTravelDisutilityFactoryBinding(TransportMode.ride).to(carTravelDisutilityFactoryKey());
 			}
 		});
-		// use our own main mode identifier
-		controler.addOverridingModule(new AbstractModule() {
-			
-			@Override
-			public void install() {
-				bind(MainModeIdentifier.class).to(NemoMainModeIdentifier.class).asEagerSingleton();
-			}
-		});
 
 		Bicycles.addAsOverridingModule(controler);
 		return controler;
