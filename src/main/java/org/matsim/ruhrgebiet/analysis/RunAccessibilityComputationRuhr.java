@@ -30,6 +30,7 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup.AreaOfAccesssibilityComputation;
+import org.matsim.contrib.accessibility.AccessibilityFromEvents;
 import org.matsim.contrib.accessibility.Modes4Accessibility;
 import org.matsim.contrib.accessibility.utils.VisualizationUtils;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
@@ -182,6 +183,16 @@ public class RunAccessibilityComputationRuhr {
 				scenario.getActivityFacilities().addActivityFacility(facility);
 			}
 		}
+
+		// yyyy In principle, should now be possible to replace the controler lines by something like
+//		AccessibilityFromEvents.Builder builder = new AccessibilityFromEvents.Builder( scenario , eventsFilename );
+//		builder.build().run() ;
+		// Current shortcomings:
+		// * It does not work with pt, in part because you cannot maven-use the swiss rail raptor from a contrib.   Hopefully,
+		// this will change in the near future.
+		// * I have not implemented the network filtering that seems to be in the code above.  Not sure why that has to be here and not in the
+		// accessibility contrib.
+		// kai, sep'19
 
 		org.matsim.core.controler.Controler controler = RunRuhrgebietScenario.prepareControler(scenario);
 		
