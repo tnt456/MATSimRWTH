@@ -73,19 +73,19 @@ public class GenerateAirPollutionSpatialPlots {
         final double smoothingRadius = 500.;
         final double scaleFactor = 100.;
         
-        final String runDir = rootDirectory + "path-to-run-directory/";
-    	final String runId = "run-id";
+        final String runDir = rootDirectory + "public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/output-ruhrgebiet-v1.0-1pct/";
+    	final String runId = "ruhrgebiet-v1.0-1pct";
 
         GenerateAirPollutionSpatialPlots plots = new GenerateAirPollutionSpatialPlots(gridSize, smoothingRadius, scaleFactor);
         
         final String configFile = runDir + runId + ".output_config.xml";
 		final String events = runDir + runId + ".emission.events.offline.xml.gz";
-		final String outputFile = runDir + runId + ".NOx.csv";
+		final String outputFile = runDir + runId + ".NOx";
 		
-		plots.writeEmissionsToCSV(configFile , events, outputFile, runDir, runId);
+		plots.writeEmissions(configFile , events, outputFile, runDir, runId);
     }
 
-    private void writeEmissionsToCSV(String configPath, String eventsPath, String outputPath, String runDir, String runId) {
+    private void writeEmissions(String configPath, String eventsPath, String outputFile, String runDir, String runId) {
 
 		Config config = ConfigUtils.loadConfig(configPath);
 		config.plans().setInputFile(null);
@@ -109,9 +109,10 @@ public class GenerateAirPollutionSpatialPlots {
                 .build();
 
 		TimeBinMap<Grid<Map<String, Double>>> timeBins = analyzer.process(eventsPath);
-
+		analyzer.processToJsonFile(eventsPath, outputFile + ".json");
+		
         log.info("Writing to csv...");
-        writeGridToCSV(timeBins, "NOX", outputPath);
+        writeGridToCSV(timeBins, "NOX", outputFile + ".csv");
     }
 
     private void writeGridToCSV(TimeBinMap<Grid<Map<String, Double>>> bins, String pollutant, String outputPath) {

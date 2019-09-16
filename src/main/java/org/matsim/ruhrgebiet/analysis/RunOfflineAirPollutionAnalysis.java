@@ -44,8 +44,8 @@ import org.matsim.vehicles.VehicleType;
 
 public class RunOfflineAirPollutionAnalysis {
 
-	private final static String runDirectory = "path-to-run-directory/";
-	private final static String runId = "run-id";
+	private final static String runDirectory = "public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/output-ruhrgebiet-v1.0-1pct/";
+	private final static String runId = "ruhrgebiet-v1.0-1pct";
 
 	private final static String hbefaFileCold = "shared-svn/projects/detailedEval/matsim-input-files/hbefa-files/v3.2/EFA_ColdStart_vehcat_2005average.txt";
 	private final static String hbefaFileWarm = "shared-svn/projects/detailedEval/matsim-input-files/hbefa-files/v3.2/EFA_HOT_vehcat_2005average.txt";
