@@ -76,7 +76,7 @@ public class RunOfflineAirPollutionAnalysis {
 		eConfig.setHbefaRoadTypeSource(HbefaRoadTypeSource.fromLinkAttributes);
 		eConfig.setNonScenarioVehicles(NonScenarioVehicles.ignore);
 		
-		final String emissionEventOutputFile = rootDirectory + runDirectory + runId + "." + config.controler().getLastIteration() + ".emission.events.offline.xml.gz";
+		final String emissionEventOutputFile = rootDirectory + runDirectory + runId + ".emission.events.offline.xml.gz";
 		final String eventsFile = rootDirectory + runDirectory + runId + ".output_events.xml.gz";
 		
 		Scenario scenario = ScenarioUtils.loadScenario(config);
