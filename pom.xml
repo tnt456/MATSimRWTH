@@ -65,21 +65,6 @@
 			<version>${matsim.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
-		<dependency>
-	    	<groupId>com.github.ikaddoura</groupId>
-	    	<artifactId>matsim-sbb-extensions</artifactId>
-	    	<version>fixPersonAttributesLookup-80edb69292-1</version>
-
-	    	<!-- for now: use a forked version which is compatible with the latest MATSim version -->
-		</dependency>
-
-		<!-- <dependency>
-         	<groupId>com.github.simunto</groupId>
-           	<artifactId>matsim-sbb-extensions</artifactId>
-           	<version>0.11.0-2018w44</version>
-			(careful, this is not matsim, thus not ${matsim.version})
-        </dependency> -->
         
         <dependency>
         	<groupId>org.matsim.contrib</groupId>
@@ -114,7 +99,6 @@
 		  	<artifactId>commons-csv</artifactId>
 		  	<version>1.6</version>
 	  	</dependency>
-        
 	</dependencies>
 
 	<build>
@@ -235,6 +219,5 @@
 				</pluginManagement>
 			</build>
 		</profile>
-	</profiles> 
-	
+	</profiles>
 </project>

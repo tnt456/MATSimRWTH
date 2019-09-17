@@ -31,6 +31,7 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup.AreaOfAccesssibilityComputation;
 import org.matsim.contrib.accessibility.AccessibilityFromEvents;
+import org.matsim.contrib.accessibility.AccessibilityModule;
 import org.matsim.contrib.accessibility.Modes4Accessibility;
 import org.matsim.contrib.accessibility.utils.VisualizationUtils;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
@@ -56,8 +57,8 @@ import java.util.Random;
 public class RunAccessibilityComputationRuhr {
 	private static final Logger log = Logger.getLogger( RunAccessibilityComputationRuhr.class ) ;
 
-	private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
-	//private final Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
+	//private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
+	private final Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
 	private final List<String> consideredActivityTypePrefixes = Arrays.asList("work", "other", "education", "leisure");
 
 	public static void main(String[] args) {
@@ -73,27 +74,24 @@ public class RunAccessibilityComputationRuhr {
 			log.info("runId: " + runId);
 			tileSize_m = Integer.parseInt(args[2]);
 			log.info("tileSize_m: " + tileSize_m);
-			mode = args[3];
-			log.info("mode: " + mode);
 		} else {
 			//outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
 			//runId = "run0_bc-ohne-RSV";
 			outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
 			runId = "run3_gesundeStadt-mit-RSV";
-			tileSize_m = 2000;
-			mode = TransportMode.bike;
+			tileSize_m = 5000;
 		}
 				
-		RunAccessibilityComputationRuhr accessibilities = new RunAccessibilityComputationRuhr();
-		accessibilities.run(outputDirectory, runId, tileSize_m, false, mode);
+		RunAccessibilityComputationRuhr accessibilitiesRuhr = new RunAccessibilityComputationRuhr();
+		accessibilitiesRuhr.run(outputDirectory, runId, tileSize_m, false);
 	}
 
-	private void run(String outputDirectory, String runId, int tileSize_m, boolean downsampling, String mode) {
+	private void run(String outputDirectory, String runId, int tileSize_m, boolean downsampling) {
 		String dirSubString = "";
 		if (downsampling) {
 			dirSubString = "downsampling=" + downsampling + "_";
 		}
-		final String accessibilityOutputFolder = "accessibility_" + dirSubString + "tileSize=" + tileSize_m + "mode=" + mode + "/";
+		final String accessibilityOutputFolder = "accessibility_" + dirSubString + "tileSize=" + tileSize_m + "/";
 		if (!outputDirectory.endsWith("/")) outputDirectory = outputDirectory + "/";
 
 		Config config = RunRuhrgebietScenario.prepareConfig(outputDirectory + runId + ".output_config_adjusted.xml");
@@ -113,18 +111,10 @@ public class RunAccessibilityComputationRuhr {
 		acg.setEnvelope(envelope);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, false);
 		// Modes other than freespeed are set to false by default
-		if (mode.equals(TransportMode.car)) {
-			acg.setComputingAccessibilityForMode(Modes4Accessibility.car, true);
-		} else if (mode.equals(TransportMode.bike)) {
-			acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true);
-		} else if (mode.equals(TransportMode.pt)) {
-			acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, true);
-		} else if (mode.equals(TransportMode.walk)) {
-			acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, true);
-		} else {
-			throw new IllegalArgumentException("In this quickly fixed intermediate version, one can only run either car or bike separately.");
-		}
-
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, true);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, false);
+		//acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, true);
 
 		BicycleConfigGroup bcg = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
 		bcg.setBicycleMode(TransportMode.bike);
@@ -193,10 +183,11 @@ public class RunAccessibilityComputationRuhr {
 		// * I have not implemented the network filtering that seems to be in the code above.  Not sure why that has to be here and not in the
 		// accessibility contrib.
 		// kai, sep'19
+		// The network filteirng here was just a quick fix to get things running before the dev mtg. the network filtering is now in the contrib. dz, sept'19
 
 		org.matsim.core.controler.Controler controler = RunRuhrgebietScenario.prepareControler(scenario);
 		
-		AccessibilityModuleRuhr module = new AccessibilityModuleRuhr();
+		AccessibilityModule module = new AccessibilityModule();
 		module.setConsideredActivityType(activityConsideredForAccessibilityComputation.toString());
 		controler.addOverridingModule(module);
 
@@ -215,10 +206,10 @@ public class RunAccessibilityComputationRuhr {
 			String workingDirectory = config.controler().getOutputDirectory();
 			
 			String actSpecificWorkingDirectory = workingDirectory + activityConsideredForAccessibilityComputation + "/";
-			for (Modes4Accessibility mode2 : acg.getIsComputingMode()) {
+			for (Modes4Accessibility mode : acg.getIsComputingMode()) {
 				VisualizationUtils.createQGisOutputGraduatedStandardColorRange(activityConsideredForAccessibilityComputation.toString(), mode.toString(), envelope, workingDirectory,
 						config.global().getCoordinateSystem(), includeDensityLayer, lowerBound, upperBound, range, tileSize_m, populationThreshold);
-				VisualizationUtils.createSnapshot(actSpecificWorkingDirectory, mode2.toString(), osName);
+				VisualizationUtils.createSnapshot(actSpecificWorkingDirectory, mode.toString(), osName);
 			}
 		}
 	}
