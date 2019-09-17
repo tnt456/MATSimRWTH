@@ -188,11 +188,11 @@ public class RunAccessibilityComputationRuhr {
 		// * I have not implemented the network filtering that seems to be in the code above.  Not sure why that has to be here and not in the
 		// accessibility contrib.
 		// kai, sep'19
-		// The network filteirng here was just a quick fix to get things running before the dev mtg. the network filtering is now in the contrib. dz, sept'19
+		// The network filtering here was just a quick fix to get things running before the dev mtg. the network filtering is now in the contrib. dz, sept'19
 
 		org.matsim.core.controler.Controler controler = RunRuhrgebietScenario.prepareControler(scenario);
 		
-		AccessibilityModule module = new AccessibilityModule();
+		AccessibilityModuleRuhr module = new AccessibilityModuleRuhr();
 		module.setConsideredActivityType(activityConsideredForAccessibilityComputation.toString());
 		controler.addOverridingModule(module);
 
