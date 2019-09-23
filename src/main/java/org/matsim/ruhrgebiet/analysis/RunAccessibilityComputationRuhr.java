@@ -65,7 +65,7 @@ public class RunAccessibilityComputationRuhr {
 		String outputDirectory;
 		String runId;	
 		int tileSize_m;
-		String mode;
+		boolean downsample;
 		
 		if (args.length > 0) {
 			outputDirectory = args[0];
@@ -74,16 +74,18 @@ public class RunAccessibilityComputationRuhr {
 			log.info("runId: " + runId);
 			tileSize_m = Integer.parseInt(args[2]);
 			log.info("tileSize_m: " + tileSize_m);
+			downsample = false;
 		} else {
 			//outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
 			//runId = "run0_bc-ohne-RSV";
-			outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
+			outputDirectory = "../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
 			runId = "run3_gesundeStadt-mit-RSV";
-			tileSize_m = 5000;
+			tileSize_m = 10000;
+			downsample = true;
 		}
 				
 		RunAccessibilityComputationRuhr accessibilitiesRuhr = new RunAccessibilityComputationRuhr();
-		accessibilitiesRuhr.run(outputDirectory, runId, tileSize_m, false);
+		accessibilitiesRuhr.run(outputDirectory, runId, tileSize_m, downsample);
 	}
 
 	private void run(String outputDirectory, String runId, int tileSize_m, boolean downsampling) {
@@ -94,7 +96,7 @@ public class RunAccessibilityComputationRuhr {
 		final String accessibilityOutputFolder = "accessibility_" + dirSubString + "tileSize=" + tileSize_m + "/";
 		if (!outputDirectory.endsWith("/")) outputDirectory = outputDirectory + "/";
 
-		Config config = RunRuhrgebietScenario.prepareConfig(outputDirectory + runId + ".output_config_adjusted.xml");
+		Config config = RunRuhrgebietScenario.prepareConfig(outputDirectory + runId + ".output_config_adjusted-for-accessibility-computation-ik.xml");
 		config.facilities().setFacilitiesSource(FacilitiesSource.setInScenario);
 		config.plans().setInputFile(runId + ".output_plans.xml.gz");
 		config.network().setInputFile(runId + ".output_network.xml.gz");
@@ -105,16 +107,19 @@ public class RunAccessibilityComputationRuhr {
 		config.controler().setLastIteration(config.controler().getLastIteration());
 		config.controler().setOutputDirectory(outputDirectory + accessibilityOutputFolder);
 		
+		// required by accessiblity computation
+//		config.plansCalcRoute().setRoutingRandomness(0.);
+		
 		AccessibilityConfigGroup acg = ConfigUtils.addOrGetModule(config, AccessibilityConfigGroup.class);
 		acg.setTileSize_m(tileSize_m);
 		acg.setAreaOfAccessibilityComputation(AreaOfAccesssibilityComputation.fromBoundingBox);
 		acg.setEnvelope(envelope);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, false);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, true);
 		// Modes other than freespeed are set to false by default
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, true);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, false);
-		//acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, true);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, true);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, false);
 
 		BicycleConfigGroup bcg = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
 		bcg.setBicycleMode(TransportMode.bike);
