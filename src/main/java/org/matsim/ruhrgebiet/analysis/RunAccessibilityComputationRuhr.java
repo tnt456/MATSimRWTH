@@ -31,7 +31,6 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup.AreaOfAccesssibilityComputation;
 import org.matsim.contrib.accessibility.AccessibilityFromEvents;
-import org.matsim.contrib.accessibility.AccessibilityModule;
 import org.matsim.contrib.accessibility.Modes4Accessibility;
 import org.matsim.contrib.accessibility.utils.VisualizationUtils;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
