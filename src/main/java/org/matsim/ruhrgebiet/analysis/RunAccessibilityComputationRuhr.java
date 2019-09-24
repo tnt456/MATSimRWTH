@@ -80,7 +80,7 @@ public class RunAccessibilityComputationRuhr {
 			//runId = "run0_bc-ohne-RSV";
 			outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
 			runId = "run3_gesundeStadt-mit-RSV";
-			tileSize_m = 5000;
+			tileSize_m = 1000;
 			downsample = true;
 		}
 				
@@ -110,7 +110,7 @@ public class RunAccessibilityComputationRuhr {
 		//String eventsFilename = outputDirectory + "run3_gesundeStadt-mit-RSV.output_events.xml.gz";
 
 		// required by accessiblity computation
-//		config.plansCalcRoute().setRoutingRandomness(0.);
+		config.plansCalcRoute().setRoutingRandomness(0.);
 
 		AccessibilityConfigGroup acg = ConfigUtils.addOrGetModule(config, AccessibilityConfigGroup.class);
 		acg.setTileSize_m(tileSize_m);
@@ -120,11 +120,12 @@ public class RunAccessibilityComputationRuhr {
 		// Modes other than freespeed are set to false by default
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, true);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, false);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, true);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, false);
 
 		BicycleConfigGroup bcg = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
 		bcg.setBicycleMode(TransportMode.bike);
+		bcg.setMaxBicycleSpeedForRouting(6.94); // Was 6.84 before. Need to set it to 6.84 to make consistent with corresponding mobsim speed
 
 		Scenario scenario = RunRuhrgebietScenario.prepareScenario(config);
 		
