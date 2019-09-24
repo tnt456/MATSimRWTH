@@ -78,9 +78,9 @@ public class RunAccessibilityComputationRuhr {
 		} else {
 			//outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
 			//runId = "run0_bc-ohne-RSV";
-			outputDirectory = "../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
+			outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
 			runId = "run3_gesundeStadt-mit-RSV";
-			tileSize_m = 10000;
+			tileSize_m = 5000;
 			downsample = true;
 		}
 				
@@ -106,19 +106,21 @@ public class RunAccessibilityComputationRuhr {
 		config.controler().setFirstIteration(config.controler().getLastIteration());
 		config.controler().setLastIteration(config.controler().getLastIteration());
 		config.controler().setOutputDirectory(outputDirectory + accessibilityOutputFolder);
-		
+
+		//String eventsFilename = outputDirectory + "run3_gesundeStadt-mit-RSV.output_events.xml.gz";
+
 		// required by accessiblity computation
 //		config.plansCalcRoute().setRoutingRandomness(0.);
-		
+
 		AccessibilityConfigGroup acg = ConfigUtils.addOrGetModule(config, AccessibilityConfigGroup.class);
 		acg.setTileSize_m(tileSize_m);
 		acg.setAreaOfAccessibilityComputation(AreaOfAccesssibilityComputation.fromBoundingBox);
 		acg.setEnvelope(envelope);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, true);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.freespeed, false);
 		// Modes other than freespeed are set to false by default
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.car, true);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.bike, true);
-		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, true);
+		acg.setComputingAccessibilityForMode(Modes4Accessibility.pt, false);
 		acg.setComputingAccessibilityForMode(Modes4Accessibility.walk, false);
 
 		BicycleConfigGroup bcg = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
