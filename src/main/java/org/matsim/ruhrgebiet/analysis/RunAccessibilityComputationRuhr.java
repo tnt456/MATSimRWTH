@@ -56,8 +56,8 @@ import java.util.Random;
 public class RunAccessibilityComputationRuhr {
 	private static final Logger log = Logger.getLogger( RunAccessibilityComputationRuhr.class ) ;
 
-	//private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
-	private final Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
+	private final Envelope envelope = new Envelope(310200, 430700, 5676900, 5742200); // Ruhrgebiet
+//	private final Envelope envelope = new Envelope(353400, 370700, 5690500, 5710700); // Essen
 	private final List<String> consideredActivityTypePrefixes = Arrays.asList("work", "other", "education", "leisure");
 
 	public static void main(String[] args) {
@@ -75,8 +75,8 @@ public class RunAccessibilityComputationRuhr {
 			log.info("tileSize_m: " + tileSize_m);
 			downsample = false;
 		} else {
-			//outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
-			//runId = "run0_bc-ohne-RSV";
+//			outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run0_bc-ohne-RSV/";
+//			runId = "run0_bc-ohne-RSV";
 			outputDirectory = "../../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
 			runId = "run3_gesundeStadt-mit-RSV";
 			tileSize_m = 1000;
