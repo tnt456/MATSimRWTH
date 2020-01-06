@@ -55,10 +55,9 @@ public class RunRuhrgebietScenario {
 
 		OutputDirectoryLogging.catchLogEntries();
 
-		// add a bicycle config group and configure it with "bike" as mode identifier and 24.6km/h as max speed
+		// add a bicycle config group and configure it with "bike" as mode identifier
 		BicycleConfigGroup bikeConfigGroup = new BicycleConfigGroup();
 		bikeConfigGroup.setBicycleMode(TransportMode.bike);
-		bikeConfigGroup.setMaxBicycleSpeedForRouting(6.84);
 
 		Config config = ConfigUtils.loadConfig(pathToConfigFile, bikeConfigGroup);
 
@@ -71,6 +70,7 @@ public class RunRuhrgebietScenario {
 		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt);
 		config.plansCalcRoute().removeModeRoutingParams(TransportMode.bike);
 		config.plansCalcRoute().removeModeRoutingParams("undefined");
+		config.plansCalcRoute().setInsertingAccessEgressWalk(true);
 
 		final long minDuration = 600;
 		final long maxDuration = 3600 * 27;
