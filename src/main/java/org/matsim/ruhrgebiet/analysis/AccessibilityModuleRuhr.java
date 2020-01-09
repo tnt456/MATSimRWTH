@@ -19,45 +19,10 @@
 
 package org.matsim.ruhrgebiet.analysis;
 
-import com.google.inject.Inject;
-import org.apache.log4j.Logger;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.TransportMode;
-import org.matsim.api.core.v01.network.Network;
-import org.matsim.contrib.accessibility.*;
-import org.matsim.contrib.accessibility.AccessibilityConfigGroup.AreaOfAccesssibilityComputation;
-import org.matsim.contrib.accessibility.AccessibilityConfigGroup.MeasurePointGeometryProvision;
-import org.matsim.contrib.accessibility.gis.GridUtils;
-import org.matsim.contrib.accessibility.interfaces.FacilityDataExchangeInterface;
-import org.matsim.contrib.accessibility.utils.AccessibilityUtils;
-import org.matsim.contrib.accessibility.utils.GeoserverUpdater;
-import org.matsim.contrib.matrixbasedptrouter.PtMatrix;
-import org.matsim.contrib.matrixbasedptrouter.utils.BoundingBox;
-import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.controler.AbstractModule;
-import org.matsim.core.controler.listener.ControlerListener;
-import org.matsim.core.gbl.Gbl;
-import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
-import org.matsim.core.router.TripRouter;
-import org.matsim.core.router.costcalculators.TravelDisutilityFactory;
-import org.matsim.core.router.util.TravelTime;
-import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
-import org.matsim.facilities.ActivityFacilities;
-import org.matsim.facilities.ActivityFacility;
-import org.matsim.facilities.MatsimFacilitiesReader;
-
-import javax.inject.Provider;
-import java.util.*;
-
 /**
  * @author dziemke
  */
+/*
 public final class AccessibilityModuleRuhr extends AbstractModule {
 	private static final Logger LOG = Logger.getLogger(AccessibilityModuleRuhr.class);
 
@@ -247,10 +212,13 @@ public final class AccessibilityModuleRuhr extends AbstractModule {
 		this.facilityDataListeners.add(listener) ;
 	}
 
-	/**
-	 * Add additional facility data that will generate an additional column for each (x,y,t)-Entry. The facilities are aggregated to
-	 * the measurement points in downstream code.
-	 */
+
+ */
+/**
+ * Add additional facility data that will generate an additional column for each (x,y,t)-Entry. The facilities are aggregated to
+ * the measurement points in downstream code.
+ */
+	/*
 	public void addAdditionalFacilityData(ActivityFacilities facilities) { // TDO cleanu up this method
 		if (facilities.getName() == null || facilities.getName().equals("")) {
 			throw new RuntimeException("Cannot add unnamed facility containers here. A key is required to identify them.") ;
@@ -268,3 +236,5 @@ public final class AccessibilityModuleRuhr extends AbstractModule {
 		this.activityType = activityType ;
 	}
 }
+
+	 */

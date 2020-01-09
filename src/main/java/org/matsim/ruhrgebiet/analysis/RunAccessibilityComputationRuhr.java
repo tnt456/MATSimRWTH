@@ -30,7 +30,6 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup.AreaOfAccesssibilityComputation;
-import org.matsim.contrib.accessibility.AccessibilityFromEvents;
 import org.matsim.contrib.accessibility.Modes4Accessibility;
 import org.matsim.contrib.accessibility.utils.VisualizationUtils;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
@@ -194,12 +193,12 @@ public class RunAccessibilityComputationRuhr {
 
 		org.matsim.core.controler.Controler controler = RunRuhrgebietScenario.prepareControler(scenario);
 		
-		AccessibilityModuleRuhr module = new AccessibilityModuleRuhr();
+		/*AccessibilityModuleRuhr module = new AccessibilityModuleRuhr();
 		module.setConsideredActivityType(activityConsideredForAccessibilityComputation.toString());
 		controler.addOverridingModule(module);
-
+*/
 		controler.run();
-		
+
 		// QGis
 		boolean createQGisOutput = true;
 		if (createQGisOutput) {
