@@ -22,12 +22,12 @@
 		<param name="inputNetworkFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-network-without-RSV.xml.gz" />
 	</module>
 	<module name="plans" >
-		<param name="inputPlansFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-1pct.plans.gz" />
+		<param name="inputPlansFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-1pct.plans.xml.gz" />
 		<param name="removingUnnecessaryPlanAttributes" value="false" />
 	</module>
 	<module name="vehicles" >
 		<param name="vehiclesFile"
-			   value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.0-mode-vehicles.xml.gz"/>
+			   value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-mode-vehicles.xml.gz"/>
 	</module>
 	<module name="transit" >
 		<param name="transitScheduleFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-transit-schedule.xml.gz" />
@@ -42,18 +42,8 @@
 			<param name="teleportedModeSpeed" value="1.39" />
 		</parameterset>
 		<parameterset type="teleportedModeParameters" >
-			<param name="mode" value="access_walk" />
 			<param name="beelineDistanceFactor" value="1.1" />
-			<param name="teleportedModeSpeed" value="1.39" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters" >
-			<param name="mode" value="egress_walk" />
-			<param name="beelineDistanceFactor" value="1.1" />
-			<param name="teleportedModeSpeed" value="1.39" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters" >
-			<param name="mode" value="transit_walk" />
-			<param name="beelineDistanceFactor" value="1.1" />
+			<param name="mode" value="non_network_walk" />
 			<param name="teleportedModeSpeed" value="1.39" />
 		</parameterset>
 	</module>
@@ -147,11 +137,7 @@
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 			</parameterset>
 			<parameterset type="modeParams" >
-				<param name="mode" value="access_walk" />
-				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
-			</parameterset>
-			<parameterset type="modeParams" >
-				<param name="mode" value="egress_walk" />
+				<param name="mode" value="non_network_walk" />
 				<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 			</parameterset>
 		</parameterset>
