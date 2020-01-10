@@ -99,18 +99,18 @@ public class PrepareNetworkAndPt {
 
 		var gtfsScenario = new CreatePtScheduleAndVehiclesFromGtfs().run(publicSvn.resolve(gtfsData).toString(), transformation);
 
-		new MatsimVehicleWriter(gtfsScenario.getVehicles()).writeFile(outputDir.resolve("ruhrgebiet-v1.1-transit-vehicles.xml.gz").toString());
-		new TransitScheduleWriter(gtfsScenario.getTransitSchedule()).writeFile(outputDir.resolve("ruhrgebiet-v1.1-transit-schedule.xml.gz").toString());
-		MergeNetworks.merge(network, "pt_", gtfsScenario.getNetwork());
+		new MatsimVehicleWriter(gtfsScenario.getTransitVehicles()).writeFile(outputDir.resolve("ruhrgebiet-v1.1.transit-vehicles.xml.gz").toString());
+		new TransitScheduleWriter(gtfsScenario.getTransitSchedule()).writeFile(outputDir.resolve("ruhrgebiet-v1.1.transit-schedule.xml.gz").toString());
+		MergeNetworks.merge(network, "", gtfsScenario.getNetwork());
 
-		new NetworkWriter(network).write(publicSvn.resolve(outputDir.resolve("ruhrgebiet-v1.1-network.xml.gz")).toString());
+		new NetworkWriter(network).write(publicSvn.resolve(outputDir.resolve("ruhrgebiet-v1.1.network.xml.gz")).toString());
 
 		// ----------------------------- Add bicycles and write network ------------------------------------------------
 
 		var bikeNetwork = NetworkUtils.createNetwork();
 		new MatsimNetworkReader(bikeNetwork).readFile(publicSvn.resolve(bikeHighways).toString());
 		new BikeNetworkMerger(network).mergeBikeHighways(bikeNetwork);
-		new NetworkWriter(network).write(publicSvn.resolve(outputDir.resolve("ruhrgebiet-v1.1-network-with-RSV.xml.gz")).toString());
+		new NetworkWriter(network).write(publicSvn.resolve(outputDir.resolve("ruhrgebiet-v1.1-with-RSV.network.xml.gz")).toString());
 
 		// --------------------------------------- Create Counts -------------------------------------------------------
 
@@ -132,7 +132,7 @@ public class PrepareNetworkAndPt {
 				.build()
 				.run();
 
-		CombinedCountsWriter.writeCounts(outputDir.resolve("ruhrgebiet-v1.1-counts.xml.gz"),
+		CombinedCountsWriter.writeCounts(outputDir.resolve("ruhrgebiet-v1.1.counts.xml.gz"),
 				longTermCounts.get(RawDataVehicleTypes.Pkw.toString()), shortTermCounts.get(RawDataVehicleTypes.Pkw.toString()));
 	}
 

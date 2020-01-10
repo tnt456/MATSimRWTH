@@ -49,7 +49,7 @@ public class CreatePtScheduleAndVehiclesFromGtfs {
 
     public Scenario run(String gtfsZipFile, CoordinateTransformation ct) {
 
-        final LocalDate date = LocalDate.parse("2018-05-17");
+        final LocalDate date = LocalDate.parse("2019-12-11");
 
         log.info("GTFS zip file: " + gtfsZipFile);
 

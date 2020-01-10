@@ -23,6 +23,7 @@ import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.population.Leg;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
 import org.matsim.contrib.bicycle.Bicycles;
 import org.matsim.core.config.Config;
@@ -31,7 +32,6 @@ import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryLogging;
-import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import java.util.ArrayList;
@@ -64,6 +64,7 @@ public class RunRuhrgebietScenario {
 
 		config.plansCalcRoute().setInsertingAccessEgressWalk(true);
 		config.qsim().setUsingTravelTimeCheckInTeleportation(true);
+		config.qsim().setUsePersonIdForMissingVehicleId(false);
 		config.subtourModeChoice().setProbaForRandomSingleTripMode(0.5);
 
 		// delete some default mode settings
@@ -90,7 +91,19 @@ public class RunRuhrgebietScenario {
 
 	public static Scenario prepareScenario(Config config) {
 
-		return ScenarioUtils.loadScenario(config);
+		var scenario = ScenarioUtils.loadScenario(config);
+
+		// remove route information from population since the base case was calibrated with different network
+		// TODO: Re-Calibrate baseCase with new network and currnt pt
+		scenario.getPopulation().getPersons().values().parallelStream()
+				.flatMap(person -> person.getPlans().stream())
+				.flatMap(plan -> plan.getPlanElements().stream())
+				.filter(element -> element instanceof Leg)
+				.map(element -> (Leg) element)
+				.forEach(leg -> {
+					leg.setRoute(null);
+				});
+		return scenario;
 	}
 
 	public static Controler prepareControler(Scenario scenario) {
