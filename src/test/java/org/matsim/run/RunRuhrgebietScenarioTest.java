@@ -54,10 +54,10 @@ public class RunRuhrgebietScenarioTest {
 
 	@Test
 	public final void prepareConfig() {
-		
+
 		String configFileName = "scenarios/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-1pct.config.xml";
 
-		Config config = RunRuhrgebietScenario.prepareConfig(configFileName);
+		Config config = RunRuhrgebietScenario.prepareConfig(new String[]{configFileName});
 		assertNotNull(config);
 
 	}
@@ -67,15 +67,15 @@ public class RunRuhrgebietScenarioTest {
 
 		String configFileName = "scenarios/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-1pct.config.xml";
 
-		Config config = RunRuhrgebietScenario.prepareConfig(configFileName);
-			config.controler().setWriteEventsInterval(1);
-			config.controler().setLastIteration(0);
-			config.controler().setOutputDirectory( utils.getOutputDirectory() );
-			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-			config.controler().setWritePlansUntilIteration( 0 );
-			config.controler().setWritePlansInterval( 0 );
-			config.qsim().setNumberOfThreads( 1 );
-			config.global().setNumberOfThreads( 1 );
+		Config config = RunRuhrgebietScenario.prepareConfig(new String[]{configFileName});
+		config.controler().setWriteEventsInterval(1);
+		config.controler().setLastIteration(0);
+		config.controler().setOutputDirectory(utils.getOutputDirectory());
+		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+		config.controler().setWritePlansUntilIteration(0);
+		config.controler().setWritePlansInterval(0);
+		config.qsim().setNumberOfThreads(1);
+		config.global().setNumberOfThreads(1);
 
 		Scenario scenario = RunRuhrgebietScenario.prepareScenario(config);
 			final double sample = 0.01;
@@ -145,18 +145,18 @@ public class RunRuhrgebietScenarioTest {
 	@Ignore // TODO: Make this test fit into travis-ci.
 	@Test
 	public final void runScenario20Iterations() {
-		
+
 		String configFileName = "scenarios/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-1pct.config.xml";
 
-		Config config = RunRuhrgebietScenario.prepareConfig(configFileName);
-			config.controler().setWriteEventsInterval(0);
-			config.controler().setLastIteration(20);
-			config.controler().setOutputDirectory( utils.getOutputDirectory() );
-			config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-			config.controler().setWritePlansUntilIteration( 0 );
-			config.controler().setWritePlansInterval( 0 );
-			config.qsim().setNumberOfThreads( 1 );
-			config.global().setNumberOfThreads( 1 );
+		Config config = RunRuhrgebietScenario.prepareConfig(new String[]{configFileName});
+		config.controler().setWriteEventsInterval(0);
+		config.controler().setLastIteration(20);
+		config.controler().setOutputDirectory(utils.getOutputDirectory());
+		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
+		config.controler().setWritePlansUntilIteration(0);
+		config.controler().setWritePlansInterval(0);
+		config.qsim().setNumberOfThreads(1);
+		config.global().setNumberOfThreads(1);
 
 		Scenario scenario = RunRuhrgebietScenario.prepareScenario(config);
 			final double sample = 0.01;

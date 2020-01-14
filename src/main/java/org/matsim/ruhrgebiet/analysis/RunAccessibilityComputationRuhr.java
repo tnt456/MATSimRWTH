@@ -94,7 +94,7 @@ public class RunAccessibilityComputationRuhr {
 		final String accessibilityOutputFolder = "accessibility_" + dirSubString + "tileSize=" + tileSize_m + "/";
 		if (!outputDirectory.endsWith("/")) outputDirectory = outputDirectory + "/";
 
-		Config config = RunRuhrgebietScenario.prepareConfig(outputDirectory + runId + ".output_config_adjusted-for-accessibility-computation-ik.xml");
+		Config config = RunRuhrgebietScenario.prepareConfig(new String[]{outputDirectory + runId + ".output_config_adjusted-for-accessibility-computation-ik.xml"});
 		config.facilities().setFacilitiesSource(FacilitiesSource.setInScenario);
 		config.plans().setInputFile(runId + ".output_plans.xml.gz");
 		config.network().setInputFile(runId + ".output_network.xml.gz");

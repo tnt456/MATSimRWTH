@@ -23,6 +23,7 @@ import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
 import org.matsim.contrib.bicycle.Bicycles;
@@ -32,6 +33,7 @@ import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryLogging;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import java.util.ArrayList;
@@ -39,20 +41,17 @@ import java.util.List;
 
 public class RunRuhrgebietScenario {
 
-	private static final Logger log = Logger.getLogger(RunRuhrgebietScenario.class );
+	private static final Logger log = Logger.getLogger(RunRuhrgebietScenario.class);
 
 	public static void main(String[] args) {
 
-		if (args.length != 1)
-			throw new IllegalArgumentException("start the script with <path/to/your/config.xml> as only parameter!");
-
-		Config config = prepareConfig(args[0]);
+		Config config = prepareConfig(args);
 		Scenario scenario = prepareScenario(config);
 		Controler controler = prepareControler(scenario);
 		controler.run();
 	}
 
-	public static Config prepareConfig(String pathToConfigFile) {
+	public static Config prepareConfig(String[] args) {
 
 		OutputDirectoryLogging.catchLogEntries();
 
@@ -60,7 +59,7 @@ public class RunRuhrgebietScenario {
 		BicycleConfigGroup bikeConfigGroup = new BicycleConfigGroup();
 		bikeConfigGroup.setBicycleMode(TransportMode.bike);
 
-		Config config = ConfigUtils.loadConfig(pathToConfigFile, bikeConfigGroup);
+		Config config = ConfigUtils.loadConfig(args, bikeConfigGroup);
 
 		config.plansCalcRoute().setInsertingAccessEgressWalk(true);
 		config.qsim().setUsingTravelTimeCheckInTeleportation(true);
@@ -103,6 +102,18 @@ public class RunRuhrgebietScenario {
 				.forEach(leg -> {
 					leg.setRoute(null);
 				});
+
+		// map persons onto new link ids
+		scenario.getPopulation().getPersons().values().parallelStream()
+				.flatMap(person -> person.getPlans().stream())
+				.flatMap(plan -> plan.getPlanElements().stream())
+				.filter(element -> element instanceof Activity)
+				.map(element -> (Activity) element)
+				.forEach(activity -> {
+					var link = NetworkUtils.getNearestLink(scenario.getNetwork(), activity.getCoord());
+					activity.setLinkId(link.getId());
+				});
+
 		return scenario;
 	}
 
