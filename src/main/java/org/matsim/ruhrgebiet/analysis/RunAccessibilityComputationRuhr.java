@@ -32,9 +32,11 @@ import org.matsim.contrib.accessibility.AccessibilityConfigGroup;
 import org.matsim.contrib.accessibility.AccessibilityConfigGroup.AreaOfAccesssibilityComputation;
 import org.matsim.contrib.accessibility.Modes4Accessibility;
 import org.matsim.contrib.accessibility.utils.VisualizationUtils;
+import org.matsim.contrib.av.robotaxi.fares.drt.DrtFaresConfigGroup;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
 import org.matsim.contrib.bicycle.BicycleUtils;
-import org.matsim.core.config.Config;
+import org.matsim.contrib.drt.run.MultiModeDrtConfigGroup;
+import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.FacilitiesConfigGroup.FacilitiesSource;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
@@ -94,16 +96,20 @@ public class RunAccessibilityComputationRuhr {
 		final String accessibilityOutputFolder = "accessibility_" + dirSubString + "tileSize=" + tileSize_m + "/";
 		if (!outputDirectory.endsWith("/")) outputDirectory = outputDirectory + "/";
 
-		Config config = RunRuhrgebietScenario.prepareConfig(new String[]{outputDirectory + runId + ".output_config_adjusted-for-accessibility-computation-ik.xml"});
+		//Config config = RunRuhrgebietScenario.prepareConfig(new String[]{outputDirectory + runId + ".output_config_adjusted-for-accessibility-computation-ik.xml"});
+		var config = RunRuhrgebietScenario.prepareConfig(new String[]{outputDirectory + runId + ".output_config.xml"}, new DvrpConfigGroup(),
+				new MultiModeDrtConfigGroup(), new DrtFaresConfigGroup());
 		config.facilities().setFacilitiesSource(FacilitiesSource.setInScenario);
 		config.plans().setInputFile(runId + ".output_plans.xml.gz");
 		config.network().setInputFile(runId + ".output_network.xml.gz");
 		config.transit().setTransitScheduleFile(runId + ".output_transitSchedule.xml.gz");
 		config.transit().setVehiclesFile(runId + ".output_transitVehicles.xml.gz");
-		config.vehicles().setVehiclesFile("https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-mode-vehicles.xml.gz");
+		config.vehicles().setVehiclesFile("https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1.mode-vehicles.xml");
 		config.controler().setFirstIteration(config.controler().getLastIteration());
 		config.controler().setLastIteration(config.controler().getLastIteration());
 		config.controler().setOutputDirectory(outputDirectory + accessibilityOutputFolder);
+
+		//config.plansCalcRoute().getTeleportedModeSpeeds().put(TransportMode.bike, 3.53); // just take some value since accessibility computation expects bike to be teleported.
 
 		//String eventsFilename = outputDirectory + "run3_gesundeStadt-mit-RSV.output_events.xml.gz";
 
@@ -123,17 +129,17 @@ public class RunAccessibilityComputationRuhr {
 
 		BicycleConfigGroup bcg = ConfigUtils.addOrGetModule(config, BicycleConfigGroup.class);
 		bcg.setBicycleMode(TransportMode.bike);
-		bcg.setMaxBicycleSpeedForRouting(6.94); // Was 6.84 before. Need to set it to 6.84 to make consistent with corresponding mobsim speed
+		bcg.setMaxBicycleSpeedForRouting(6.82); // Was 6.84 before. Need to set it to 6.84 to make consistent with corresponding mobsim speed
 
-		Scenario scenario = RunRuhrgebietScenario.prepareScenario(config);
-		
+		Scenario scenario = ScenarioUtils.loadScenario(config);//RunRuhrgebietScenario.prepareScenario(config);
+
 		// bicycle contrib requires the attribute "bicycleInfrastructureSpeedFactor" instead of "bike_speed_factor"
 		for (Link link : scenario.getNetwork().getLinks().values()) {
 			if (link.getAttributes().getAttribute("bike_speed_factor") != null) {
 				link.getAttributes().putAttribute(BicycleUtils.BICYCLE_INFRASTRUCTURE_SPEED_FACTOR, link.getAttributes().getAttribute("bike_speed_factor"));
 			}
 		}
-		
+
 		// down-sampling the scenario
 		if (downsampling) {
 			final double sample = 0.1;
@@ -192,8 +198,13 @@ public class RunAccessibilityComputationRuhr {
 		// The network filtering here was just a quick fix to get things running before the dev mtg. the network filtering is now in the contrib. dz, sept'19
 
 		org.matsim.core.controler.Controler controler = RunRuhrgebietScenario.prepareControler(scenario);
-		
-		/*AccessibilityModuleRuhr module = new AccessibilityModuleRuhr();
+
+		var module = new AccessibilityModuleRuhr();
+		module.setConsideredActivityType(activityConsideredForAccessibilityComputation.toString());
+		controler.addOverridingModule(module);
+
+		/*
+		AccessibilityModuleRuhr module = new AccessibilityModuleRuhr();
 		module.setConsideredActivityType(activityConsideredForAccessibilityComputation.toString());
 		controler.addOverridingModule(module);
 */

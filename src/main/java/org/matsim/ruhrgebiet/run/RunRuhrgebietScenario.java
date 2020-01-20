@@ -28,15 +28,17 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
 import org.matsim.contrib.bicycle.Bicycles;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryLogging;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.ruhrgebiet.Utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class RunRuhrgebietScenario {
@@ -51,38 +53,35 @@ public class RunRuhrgebietScenario {
 		controler.run();
 	}
 
-	public static Config prepareConfig(String[] args) {
+	public static Config prepareConfig(String[] args, ConfigGroup... modules) {
 
 		OutputDirectoryLogging.catchLogEntries();
 
-		// add a bicycle config group and configure it with "bike" as mode identifier
 		BicycleConfigGroup bikeConfigGroup = new BicycleConfigGroup();
 		bikeConfigGroup.setBicycleMode(TransportMode.bike);
 
-		Config config = ConfigUtils.loadConfig(args, bikeConfigGroup);
+		//this feels a little messy, but I guess this is how var-args work
+		List<ConfigGroup> moduleList = new ArrayList<>(Arrays.asList(modules));
+		moduleList.add(bikeConfigGroup);
+
+		Config config = ConfigUtils.loadConfig(args, moduleList.toArray(ConfigGroup[]::new));
 
 		config.plansCalcRoute().setInsertingAccessEgressWalk(true);
+
 		config.qsim().setUsingTravelTimeCheckInTeleportation(true);
 		config.qsim().setUsePersonIdForMissingVehicleId(false);
 		config.subtourModeChoice().setProbaForRandomSingleTripMode(0.5);
-
-		// delete some default mode settings
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.ride);
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.pt);
-		config.plansCalcRoute().removeModeRoutingParams(TransportMode.bike);
-		config.plansCalcRoute().removeModeRoutingParams("undefined");
-		config.plansCalcRoute().setInsertingAccessEgressWalk(true);
 
 		final long minDuration = 600;
 		final long maxDuration = 3600 * 27;
 		final long difference = 600;
 
-		addTypicalDurations("home", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
-		addTypicalDurations("work", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
-		addTypicalDurations("education", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
-		addTypicalDurations("leisure", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
-		addTypicalDurations("shopping", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
-		addTypicalDurations("other", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
+		Utils.createTypicalDurations("home", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
+		Utils.createTypicalDurations("work", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
+		Utils.createTypicalDurations("education", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
+		Utils.createTypicalDurations("leisure", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
+		Utils.createTypicalDurations("shopping", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
+		Utils.createTypicalDurations("other", minDuration, maxDuration, difference).forEach(params -> config.planCalcScore().addActivityParams(params));
 		// TODO: for next release: define opening and closing times! ihab April'19
 
 		return config;
@@ -99,9 +98,7 @@ public class RunRuhrgebietScenario {
 				.flatMap(plan -> plan.getPlanElements().stream())
 				.filter(element -> element instanceof Leg)
 				.map(element -> (Leg) element)
-				.forEach(leg -> {
-					leg.setRoute(null);
-				});
+				.forEach(leg -> leg.setRoute(null));
 
 		// map persons onto new link ids
 		scenario.getPopulation().getPersons().values().parallelStream()
@@ -138,15 +135,4 @@ public class RunRuhrgebietScenario {
 		Bicycles.addAsOverridingModule(controler);
 		return controler;
 	}
-
-	private static List<PlanCalcScoreConfigGroup.ActivityParams> addTypicalDurations(String type, long minDurationInSeconds, long maxDurationInSeconds, long durationDifferenceInSeconds) {
-
-		List<PlanCalcScoreConfigGroup.ActivityParams> result = new ArrayList<>();
-        for (long duration = minDurationInSeconds; duration <= maxDurationInSeconds; duration += durationDifferenceInSeconds) {
-            final PlanCalcScoreConfigGroup.ActivityParams params = new PlanCalcScoreConfigGroup.ActivityParams(type + "_" + duration + ".0");
-            params.setTypicalDuration(duration);
-			result.add(params);
-        }
-		return result;
-    }
 }

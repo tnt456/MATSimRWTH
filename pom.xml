@@ -10,8 +10,8 @@
 	<description>MATSim Open Ruhrgebiet scenario project</description>
 
 	<properties>
-	  <matsim.version>12.0-SNAPSHOT</matsim.version>
-	  <!--<matsim.version>12.0-2019w14-SNAPSHOT</matsim.version>-->
+		<matsim.version>12.0-2020w02-SNAPSHOT</matsim.version>
+		<!--<matsim.version>12.0-2019w14-SNAPSHOT</matsim.version>-->
 	</properties>
 
 	<repositories>
@@ -106,6 +106,20 @@
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
 			<artifactId>osm</artifactId>
+			<version>${matsim.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>av</artifactId>
+			<version>${matsim.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>dvrp</artifactId>
 			<version>${matsim.version}</version>
 			<scope>compile</scope>
 		</dependency>
