@@ -4,13 +4,14 @@
 	<module name="TimeAllocationMutator" >
 		<param name="mutationRange" value="7200.0" />
 	</module>
-	<module name="controler" >
-		<param name="lastIteration" value="500" />
-		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
-		<param name="runId" value="ruhrgebiet-v1.1-1pct" />
-		<param name="outputDirectory" value="./output_ruhrgebiet-v1.1-1pct/" />
-		<param name="writeEventsInterval" value="100" />
-		<param name="writePlansInterval" value="100" />
+	<module name="controler">
+		<param name="lastIteration" value="500"/>
+		<param name="overwriteFiles" value="deleteDirectoryIfExists"/>
+		<param name="runId" value="ruhrgebiet-v1.1-1pct"/>
+		<param name="outputDirectory" value="./output_ruhrgebiet-v1.1-1pct/"/>
+		<param name="writeEventsInterval" value="100"/>
+		<param name="writePlansInterval" value="100"/>
+		<param name="routingAlgorithmType" value="FastAStarLandmarks"/>
 	</module>
 	<module name="global" >
 		<param name="coordinateSystem" value="EPSG:25832" />

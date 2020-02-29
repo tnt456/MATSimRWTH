@@ -10,8 +10,8 @@
 	<description>MATSim Open Ruhrgebiet scenario project</description>
 
 	<properties>
-	  <matsim.version>12.0-SNAPSHOT</matsim.version>
-	  <!--<matsim.version>12.0-2019w14-SNAPSHOT</matsim.version>-->
+		<matsim.version>12.0-2020w02-SNAPSHOT</matsim.version>
+		<!--<matsim.version>12.0-2019w14-SNAPSHOT</matsim.version>-->
 	</properties>
 
 	<repositories>
@@ -22,23 +22,32 @@
 			<name>Geotools repository</name>
 			<url>http://download.osgeo.org/webdav/geotools</url>
 		</repository>
-		
+
 		<repository>
 			<!-- Repository for MATSim releases (MATSim is not on Maven central) -->
 			<id>matsim</id>
 			<url>https://dl.bintray.com/matsim/matsim</url>
 		</repository>
-		
+
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
-		
- 		<repository>
+
+		<repository>
 			<!-- For MATSim snapshots: -->
 			<id>ojo-snapshots</id>
 			<url>http://oss.jfrog.org/libs-snapshot</url>
-		</repository>	
+		</repository>
+
+		<repository>
+			<id>topobyte</id>
+			<url>http://mvn.topobyte.de</url>
+		</repository>
+		<repository>
+			<id>slimjars</id>
+			<url>http://mvn.slimjars.com</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -72,33 +81,79 @@
         	<version>${matsim.version}</version>
         	<scope>compile</scope>
       	</dependency>
-      	
-      	<dependency>
-        	<groupId>org.matsim.contrib</groupId>
-        	<artifactId>noise</artifactId>
-        	<version>${matsim.version}</version>
-        	<scope>compile</scope>
-      	</dependency>
-      	
-      	<dependency>
-        	<groupId>org.matsim.contrib</groupId>
-        	<artifactId>accessibility</artifactId>
-        	<version>${matsim.version}</version>
-        	<scope>compile</scope>
-      	</dependency>
-      	
-      	<dependency>
-        	<groupId>org.matsim.contrib</groupId>
-        	<artifactId>bicycle</artifactId>
-        	<version>${matsim.version}</version>
-        	<scope>compile</scope>
-      	</dependency>
-      	
-      	<dependency>
-		  	<groupId>org.apache.commons</groupId>
-		  	<artifactId>commons-csv</artifactId>
-		  	<version>1.6</version>
-	  	</dependency>
+
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>noise</artifactId>
+			<version>${matsim.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>accessibility</artifactId>
+			<version>${matsim.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>bicycle</artifactId>
+			<version>${matsim.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>osm</artifactId>
+			<version>${matsim.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>av</artifactId>
+			<version>${matsim.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>dvrp</artifactId>
+			<version>${matsim.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.matsim-org</groupId>
+			<artifactId>GTFS2MATSim</artifactId>
+			<version>11.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>4.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.beust</groupId>
+			<artifactId>jcommander</artifactId>
+			<version>1.71</version>
+		</dependency>
+
+		<dependency>
+	    	<groupId>com.github.matsim-vsp</groupId>
+	    	<artifactId>matsim-analysis</artifactId>
+	    	<version>060df242b2</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -106,21 +161,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>3.8.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<showWarnings>false</showWarnings>
-					<showDeprecation>false</showDeprecation>
-					<encoding>UTF-8</encoding>
-					<!-- configure initial and maximal memory for compiling -->
-					<fork>true</fork>
-					<meminitial>128m</meminitial>
-					<maxmem>512m</maxmem>
-					<compilerArguments>
-						<Xmaxwarns>4000</Xmaxwarns>
-						<Xmaxerrs>100</Xmaxerrs>
-					</compilerArguments>
+					<release>11</release>
 				</configuration>
 			</plugin>
 			<plugin>
