@@ -19,19 +19,21 @@
 
 package org.matsim.ruhrgebiet.analysis;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.matsim.analysis.AgentAnalysisFilter;
 import org.matsim.analysis.AgentFilter;
 import org.matsim.analysis.MatsimAnalysis;
+import org.matsim.analysis.TripFilter;
+import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RunPersonTripAnalysisRuhr {
 	private static final Logger log = Logger.getLogger(RunPersonTripAnalysisRuhr.class);
@@ -56,26 +58,26 @@ public class RunPersonTripAnalysisRuhr {
 			throw new RuntimeException();
 			
 		} else {
-			
-			runDirectory = "../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run3_gesundeStadt-mit-RSV/";
-			runId = "run3_gesundeStadt-mit-RSV";		
-			
-			runDirectoryToCompareWith = "../runs-svn/nemo/wissenschaftsforum2019_simulationsbasierteZukunftsforschung/run2_gesundeStadt-ohne-RSV/";
-			runIdToCompareWith = "run2_gesundeStadt-ohne-RSV";
-						
-			scenarioCRS = "EPSG:25832";
-			
-			shapeFileZones = "../shared-svn/projects/nemo_mercator/data/original_files/shapeFiles/plzBasedPopulation/plz-gebiete_Ruhrgebiet/plz-gebiete-ruhrgebiet_EPSG-25832.shp";
-			zonesCRS = "EPSG:25832";
-			zoneId = "ID";
 
-			zoneFile = "../shared-svn/projects/nemo_mercator/data/original_files/shapeFiles/shapeFile_Ruhrgebiet/ruhrgebiet_boundary.shp";
+			runDirectory = "C:\\Users\\Janek\\repos\\runs-svn\\nemo\\baseCaseCalibration2\\baseCase_021/output/";
+			runId = "baseCase_021";
+
+			runDirectoryToCompareWith = "C:\\Users\\Janek\\Desktop\\output-2";
+			runIdToCompareWith = "smartCity";
+
+			scenarioCRS = "EPSG:25832";
+
+			shapeFileZones = "C:/Users/Janek/repos/shared-svn/projects/nemo_mercator/data/original_files/shapeFiles/plzBasedPopulation/plz-gebiete_Ruhrgebiet/plz-gebiete_Ruhrgebiet.shp";
+			zonesCRS = "EPSG:25832";
+			zoneId = "plz";
+
+			zoneFile = "C:/Users/Janek/repos/shared-svn/projects/nemo_mercator/data/original_files/shapeFiles/shapeFile_Ruhrgebiet/ruhrgebiet_boundary.shp";
 
 			homeActivityPrefix = "home";
 			scalingFactor = 100;
-			
-			modesString = TransportMode.car + "," + TransportMode.pt + "," + TransportMode.bike + "," + TransportMode.walk + "," + TransportMode.ride + "," + TransportMode.drt;			
-		
+
+			modesString = TransportMode.car + "," + TransportMode.pt + "," + TransportMode.bike + "," + TransportMode.walk + "," + TransportMode.ride + "," + TransportMode.drt;
+
 			analysisOutputDirectory = "./scenarios/outputXXX/";
 		}
 		
@@ -93,21 +95,35 @@ public class RunPersonTripAnalysisRuhr {
 		filter2.setRelevantActivityType(homeActivityPrefix);
 		filter2.preProcess(scenario1);
 		agentFilters.add(filter2);
-		
+
 		List<String> modes = new ArrayList<>();
 		for (String mode : modesString.split(",")) {
 			modes.add(mode);
 		}
 
 		MatsimAnalysis analysis = new MatsimAnalysis();
-		analysis.setScenario1(scenario1);	
+		analysis.setScenario1(scenario1);
 		analysis.setScenario0(scenario0);
-		
+
+		List<TripFilter> tripFilters = new ArrayList<>();
+		TripFilter tripFilter = new TripFilter() {
+			@Override
+			public boolean considerTrip(Coord origin, Coord destination) {
+				return true;
+			}
+
+			@Override
+			public String toFileName() {
+				return "my-pretty-name";
+			}
+		};
+		tripFilters.add(tripFilter);
+		analysis.setTripFilters(tripFilters);
 		analysis.setAgentFilters(agentFilters);
-		
+
 		analysis.setScenarioCRS(scenarioCRS);
 		analysis.setZoneInformation(shapeFileZones, zonesCRS, zoneId);
-		
+
 		analysis.setModes(modes);
 		analysis.setVisualizationScriptInputDirectory(null);
 		analysis.setHomeActivityPrefix(homeActivityPrefix);

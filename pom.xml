@@ -148,10 +148,16 @@
 			<version>1.71</version>
 		</dependency>
 
-		<dependency>
+		<!--<dependency>
 	    	<groupId>com.github.matsim-vsp</groupId>
 	    	<artifactId>matsim-analysis</artifactId>
 	    	<version>060df242b2</version>
+		</dependency>-->
+
+		<dependency>
+			<groupId>com.github.matsim-vsp</groupId>
+			<artifactId>matsim-analysis</artifactId>
+			<version>v2.6</version>
 		</dependency>
 
 	</dependencies>
