@@ -88,7 +88,8 @@ public class RunOfflineAirPollutionAnalysis {
 
 			if (link.getFreespeed() <= 13.888889) {
 				freespeed = link.getFreespeed() * 2;
-				// for non motorway roads, the free speed level was reduced
+				// for non motorway roads, the free speed level was reduced.  Note that this speed increase is only done for the emissions,
+				// so that we obtain correct lookups.
 			} else {
 				freespeed = link.getFreespeed();
 				// for motorways, the original speed levels seems ok.
