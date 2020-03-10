@@ -28,6 +28,7 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.analysis.spatial.Grid;
 import org.matsim.contrib.analysis.time.TimeBinMap;
+import org.matsim.contrib.emissions.Pollutant;
 import org.matsim.contrib.emissions.analysis.EmissionGridAnalyzer;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -61,31 +62,26 @@ public class GenerateAirPollutionSpatialPlots {
 
 	public static void main(String[] args) {
 
-		String rootDirectory;
-		
-		if (args.length == 1) {
-			rootDirectory = args[0];
-		} else {
-			throw new RuntimeException("Please set the root directory. Aborting...");
-		}
-        
-        final double gridSize = 100.;
-        final double smoothingRadius = 500.;
-        final double scaleFactor = 100.;
-        
-        final String runDir = rootDirectory + "public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/output-ruhrgebiet-v1.0-1pct/";
-    	final String runId = "ruhrgebiet-v1.0-1pct";
+		final double gridSize = 100.;
+		final double smoothingRadius = 500.;
+		final double scaleFactor = 100.;
 
-        GenerateAirPollutionSpatialPlots plots = new GenerateAirPollutionSpatialPlots(gridSize, smoothingRadius, scaleFactor);
-        
-        final String configFile = runDir + runId + ".output_config.xml";
+		//final String runDir = rootDirectory + "public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/output-ruhrgebiet-v1.0-1pct/";
+		final String runDir = "C:\\Users\\Janek\\Desktop\\output-2\\";
+		//final String runId = "ruhrgebiet-v1.0-1pct";
+		final String runId = "smartCity";
+		final String ruhrShape = "C:\\Users\\Janek\\repos\\shared-svn\\projects\\nemo_mercator\\data\\matsim_input\\smartCity\\ruhrgebiet_boundary.shp";
+
+		GenerateAirPollutionSpatialPlots plots = new GenerateAirPollutionSpatialPlots(gridSize, smoothingRadius, scaleFactor);
+
+		final String configFile = runDir + runId + ".output_config.xml";
 		final String events = runDir + runId + ".emission.events.offline.xml.gz";
 		final String outputFile = runDir + runId + ".NOx";
-		
-		plots.writeEmissions(configFile , events, outputFile, runDir, runId);
-    }
 
-    private void writeEmissions(String configPath, String eventsPath, String outputFile, String runDir, String runId) {
+		plots.writeEmissions(configFile, events, outputFile, runDir, runId, ruhrShape);
+	}
+
+	private void writeEmissions(String configPath, String eventsPath, String outputFile, String runDir, String runId, String shapeFile) {
 
 		Config config = ConfigUtils.loadConfig(configPath);
 		config.plans().setInputFile(null);
@@ -93,38 +89,43 @@ public class GenerateAirPollutionSpatialPlots {
 		config.transit().setVehiclesFile(null);
 		config.vehicles().setVehiclesFile(null);
 		config.network().setInputFile(runDir + runId + ".output_network.xml.gz");
-        Scenario scenario = ScenarioUtils.loadScenario(config);
+		Scenario scenario = ScenarioUtils.loadScenario(config);
 
-        double binSize = 200000; // make the bin size bigger than the scenario has seconds
-        Network network = scenario.getNetwork();
+		double binSize = 200000; // make the bin size bigger than the scenario has seconds
+		Network network = scenario.getNetwork();
 
-        EmissionGridAnalyzer analyzer = new EmissionGridAnalyzer.Builder()
-                .withGridSize(gridSize)
-                .withTimeBinSize(binSize)
-                .withNetwork(network)
-                .withBounds(createBoundingBox())
-                .withSmoothingRadius(smoothingRadius)
-                .withCountScaleFactor(countScaleFactor)
-                .withGridType(EmissionGridAnalyzer.GridType.Square)
-                .build();
+       /* var geometry = ShapeFileReader.getAllFeatures(shapeFile).stream()
+				.map(simpleFeature -> (Geometry)simpleFeature.getDefaultGeometry())
+				.findFirst()
+				.orElseThrow();
+*/
+		EmissionGridAnalyzer analyzer = new EmissionGridAnalyzer.Builder()
+				.withGridSize(gridSize)
+				.withTimeBinSize(binSize)
+				.withNetwork(network)
+				.withBounds(createBoundingBox())
+				.withSmoothingRadius(smoothingRadius)
+				.withCountScaleFactor(countScaleFactor)
+				.withGridType(EmissionGridAnalyzer.GridType.Square)
+				.build();
 
-		TimeBinMap<Grid<Map<String, Double>>> timeBins = analyzer.process(eventsPath);
-		analyzer.processToJsonFile(eventsPath, outputFile + ".json");
-		
-        log.info("Writing to csv...");
-        writeGridToCSV(timeBins, "NOX", outputFile + ".csv");
-    }
+		TimeBinMap<Grid<Map<Pollutant, Double>>> timeBins = analyzer.process(eventsPath);
+		//analyzer.processToJsonFile(eventsPath, outputFile + ".json");
 
-    private void writeGridToCSV(TimeBinMap<Grid<Map<String, Double>>> bins, String pollutant, String outputPath) {
+		log.info("Writing to csv...");
+		writeGridToCSV(timeBins, Pollutant.NOx, outputFile + ".csv");
+	}
+
+	private void writeGridToCSV(TimeBinMap<Grid<Map<Pollutant, Double>>> bins, Pollutant pollutant, String outputPath) {
 
 		try (CSVPrinter printer = new CSVPrinter(new FileWriter(outputPath), CSVFormat.TDF)) {
-            printer.printRecord("timeBinStartTime", "centroidX", "centroidY", "weight");
+			printer.printRecord("timeBinStartTime", "centroidX", "centroidY", "weight");
 
-            for (TimeBinMap.TimeBin<Grid<Map<String, Double>>> bin : bins.getTimeBins()) {
-                final double timeBinStartTime = bin.getStartTime();
-                for (Grid.Cell<Map<String, Double>> cell : bin.getValue().getCells()) {
-                    double weight = cell.getValue().containsKey(pollutant) ? cell.getValue().get(pollutant) : 0;
-                    printer.printRecord(timeBinStartTime, cell.getCoordinate().x, cell.getCoordinate().y, weight);
+			for (TimeBinMap.TimeBin<Grid<Map<Pollutant, Double>>> bin : bins.getTimeBins()) {
+				final double timeBinStartTime = bin.getStartTime();
+				for (Grid.Cell<Map<Pollutant, Double>> cell : bin.getValue().getCells()) {
+					double weight = cell.getValue().containsKey(pollutant) ? cell.getValue().get(pollutant) : 0;
+					printer.printRecord(timeBinStartTime, cell.getCoordinate().x, cell.getCoordinate().y, weight);
 				}
 			}
         } catch (IOException e) {

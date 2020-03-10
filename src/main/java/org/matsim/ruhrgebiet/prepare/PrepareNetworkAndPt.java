@@ -13,7 +13,7 @@ import org.matsim.api.core.v01.network.NetworkWriter;
 import org.matsim.contrib.accessibility.utils.MergeNetworks;
 import org.matsim.contrib.bicycle.BicycleUtils;
 import org.matsim.contrib.osm.networkReader.LinkProperties;
-import org.matsim.contrib.osm.networkReader.SupersonicBicycleOsmNetworkReader;
+import org.matsim.contrib.osm.networkReader.OsmBicycleReader;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.MultimodalNetworkCleaner;
 import org.matsim.core.network.io.MatsimNetworkReader;
@@ -82,11 +82,11 @@ public class PrepareNetworkAndPt {
 
 		// ----------------------------------------- Create Network ----------------------------------------------------
 
-		var network = new SupersonicBicycleOsmNetworkReader.Builder()
-				.coordinateTransformation(transformation)
-				.includeLinkAtCoordWithHierarchy((coord, level) -> isIncludeLink(coord, level, geometries))
-				.preserveNodeWithId(nodeIdsToKeep::contains)
-				.afterLinkCreated((link, tags, direction) -> onLinkCreated(link))
+		var network = new OsmBicycleReader.Builder()
+				.setCoordinateTransformation(transformation)
+				.setIncludeLinkAtCoordWithHierarchy((coord, level) -> isIncludeLink(coord, level, geometries))
+				.setPreserveNodeWithId(nodeIdsToKeep::contains)
+				.setAfterLinkCreated((link, tags, direction) -> onLinkCreated(link))
 				.build()
 				.read(publicSvn.resolve(osmData));
 

@@ -199,10 +199,10 @@ public class RunAccessibilityComputationRuhr {
 
 		org.matsim.core.controler.Controler controler = RunRuhrgebietScenario.prepareControler(scenario);
 
-		var module = new AccessibilityModuleRuhr();
+		/*var module = new AccessibilityModuleRuhr();
 		module.setConsideredActivityType(activityConsideredForAccessibilityComputation.toString());
 		controler.addOverridingModule(module);
-
+*/
 		/*
 		AccessibilityModuleRuhr module = new AccessibilityModuleRuhr();
 		module.setConsideredActivityType(activityConsideredForAccessibilityComputation.toString());

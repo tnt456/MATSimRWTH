@@ -19,6 +19,8 @@
 
 package org.matsim.ruhrgebiet.analysis;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
@@ -37,50 +39,46 @@ import org.matsim.core.events.MatsimEventsReader;
 import org.matsim.core.events.algorithms.EventWriterXML;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.vehicles.VehicleType;
+import org.matsim.vehicles.VehicleUtils;
 
 /**
-* @author ikaddoura
-*/
+ * @author ikaddoura
+ */
 
 public class RunOfflineAirPollutionAnalysis {
 
-	private final static String runDirectory = "public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/output-ruhrgebiet-v1.0-1pct/";
-	private final static String runId = "ruhrgebiet-v1.0-1pct";
+	//private final static String runDirectory = "public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/output-ruhrgebiet-v1.0-1pct/";
+	//private final static String runId = "ruhrgebiet-v1.0-1pct";
 
-	private final static String hbefaFileCold = "shared-svn/projects/detailedEval/matsim-input-files/hbefa-files/v3.2/EFA_ColdStart_vehcat_2005average.txt";
-	private final static String hbefaFileWarm = "shared-svn/projects/detailedEval/matsim-input-files/hbefa-files/v3.2/EFA_HOT_vehcat_2005average.txt";
-	
+	private final static String runDirectory = "C:\\Users\\Janek\\repos\\runs-svn\\nemo\\wissenschaftsforum2019_simulationsbasierteZukunftsforschung\\run3_gesundeStadt-mit-RSV\\";
+	private final static String runId = "run3_gesundeStadt-mit-RSV";
+
+	private final static String hbefaFileCold = "C:/Users/Janek/repos/shared-svn/projects/detailedEval/emissions/hbefaForMatsim/new/EFA_ColdStart_vehcat_2005average.txt";
+	private final static String hbefaFileWarm = "C:/Users/Janek/repos/shared-svn/projects/detailedEval/emissions/hbefaForMatsim/new/EFA_HOT_vehcat_2005average.txt";
+
 	public static void main(String[] args) {
 
-		String rootDirectory;
-		
-		if (args.length == 1) {
-			rootDirectory = args[0];
-		} else {
-			throw new RuntimeException("Please set the root directory. Aborting...");
-		}
-		
-		if (!rootDirectory.endsWith("/")) rootDirectory = rootDirectory + "/";
-		
-		Config config = ConfigUtils.loadConfig(rootDirectory + runDirectory + runId + ".output_config.xml");
-		config.vehicles().setVehiclesFile(rootDirectory + runDirectory + runId + ".output_vehicles.xml.gz");
-		config.network().setInputFile(rootDirectory + runDirectory + runId + ".output_network.xml.gz");
+		Logger.getRootLogger().setLevel(Level.WARN);
+
+		Config config = ConfigUtils.loadConfig(runDirectory + runId + ".output_config.xml");
+		config.vehicles().setVehiclesFile(runDirectory + runId + ".output_vehicles.xml.gz");
+		config.network().setInputFile(runDirectory + runId + ".output_network.xml.gz");
 
 		config.plans().setInputFile(null);
 		config.transit().setTransitScheduleFile(null);
 		config.transit().setVehiclesFile(null);
-		
+
 		EmissionsConfigGroup eConfig = ConfigUtils.addOrGetModule(config, EmissionsConfigGroup.class);
-		eConfig.setAverageColdEmissionFactorsFile(rootDirectory + hbefaFileCold);
-		eConfig.setAverageWarmEmissionFactorsFile(rootDirectory + hbefaFileWarm);
+		eConfig.setAverageColdEmissionFactorsFile(hbefaFileCold);
+		eConfig.setAverageWarmEmissionFactorsFile(hbefaFileWarm);
 		eConfig.setHbefaRoadTypeSource(HbefaRoadTypeSource.fromLinkAttributes);
 		eConfig.setNonScenarioVehicles(NonScenarioVehicles.ignore);
-		
-		final String emissionEventOutputFile = rootDirectory + runDirectory + runId + ".emission.events.offline.xml.gz";
-		final String eventsFile = rootDirectory + runDirectory + runId + ".output_events.xml.gz";
-		
+
+		final String emissionEventOutputFile = runDirectory + runId + ".emission.events.offline.xml.gz";
+		final String eventsFile = runDirectory + runId + ".output_events.xml.gz";
+
 		Scenario scenario = ScenarioUtils.loadScenario(config);
-		
+
 		// network
 		for (Link link : scenario.getNetwork().getLinks().values()) {
 
@@ -127,27 +125,29 @@ public class RunOfflineAirPollutionAnalysis {
 				link.getAttributes().putAttribute("hbefa_road_type", "URB/MW-Nat./80");
 			} else if(freespeed > 22.222222222){ //faster
 				link.getAttributes().putAttribute("hbefa_road_type", "RUR/MW/>130");
-			} else{
+			} else {
 				throw new RuntimeException("Link not considered...");
-			}			
+			}
 		}
-		
+
 		Id<VehicleType> carVehicleTypeId = Id.create("car", VehicleType.class);
 		Id<VehicleType> bikeVehicleTypeId = Id.create("bike", VehicleType.class);
-		
+
 		// vehicles
-		scenario.getVehicles().getVehicleTypes().get(carVehicleTypeId).setDescription("BEGIN_EMISSIONS" + HbefaVehicleCategory.PASSENGER_CAR + ";average;average;average" + "END_EMISSIONS");
-		scenario.getVehicles().getVehicleTypes().get(bikeVehicleTypeId).setDescription("BEGIN_EMISSIONS" + HbefaVehicleCategory.ZERO_EMISSION_VEHICLE + ";average;average;average" + "END_EMISSIONS");
+		var carVehicleType = scenario.getVehicles().getVehicleTypes().get(carVehicleTypeId);
+		VehicleUtils.setHbefaVehicleCategory(carVehicleType.getEngineInformation(), HbefaVehicleCategory.PASSENGER_CAR.toString());
+		var bikeVehicleType = scenario.getVehicles().getVehicleTypes().get(bikeVehicleTypeId);
+		VehicleUtils.setHbefaVehicleCategory(bikeVehicleType.getEngineInformation(), HbefaVehicleCategory.NON_HBEFA_VEHICLE.toString());
 
 		// the following is copy paste from the example...
-		
-        EventsManager eventsManager = EventsUtils.createEventsManager();
 
-		AbstractModule module = new AbstractModule(){
+		EventsManager eventsManager = EventsUtils.createEventsManager();
+
+		AbstractModule module = new AbstractModule() {
 			@Override
-			public void install(){
-				bind( Scenario.class ).toInstance( scenario );
-				bind( EventsManager.class ).toInstance( eventsManager );
+			public void install() {
+				bind(Scenario.class).toInstance(scenario);
+				bind(EventsManager.class).toInstance(eventsManager);
 				bind( EmissionModule.class ) ;
 			}
 		};

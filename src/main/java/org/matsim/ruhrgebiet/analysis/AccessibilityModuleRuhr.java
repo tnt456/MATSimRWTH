@@ -18,6 +18,7 @@
  * *********************************************************************** */
 
 package org.matsim.ruhrgebiet.analysis;
+/*
 
 import com.google.inject.Inject;
 import org.apache.log4j.Logger;
@@ -51,9 +52,14 @@ import org.matsim.facilities.MatsimFacilitiesReader;
 import javax.inject.Provider;
 import java.util.*;
 
+*/
 /**
  * @author dziemke
- */
+ * <p>
+ * Add additional facility data that will generate an additional column for each (x,y,t)-Entry. The facilities are aggregated to
+ * the measurement points in downstream code.
+ *//*
+
 public final class AccessibilityModuleRuhr extends AbstractModule {
 	private static final Logger LOG = Logger.getLogger(AccessibilityModuleRuhr.class);
 
@@ -226,10 +232,12 @@ public final class AccessibilityModuleRuhr extends AbstractModule {
 		this.facilityDataListeners.add(listener);
 	}
 
-	/**
-	 * Add additional facility data that will generate an additional column for each (x,y,t)-Entry. The facilities are aggregated to
-	 * the measurement points in downstream code.
-	 */
+	*/
+/**
+ * Add additional facility data that will generate an additional column for each (x,y,t)-Entry. The facilities are aggregated to
+ * the measurement points in downstream code.
+ *//*
+
 	public void addAdditionalFacilityData(ActivityFacilities facilities) { // TDO cleanu up this method
 		if (facilities.getName() == null || facilities.getName().equals("")) {
 			throw new RuntimeException("Cannot add unnamed facility containers here. A key is required to identify them.");
@@ -246,4 +254,4 @@ public final class AccessibilityModuleRuhr extends AbstractModule {
 	public void setConsideredActivityType(String activityType) {
 		this.activityType = activityType;
 	}
-}
+}*/

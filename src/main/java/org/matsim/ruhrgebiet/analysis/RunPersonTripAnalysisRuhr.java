@@ -59,11 +59,11 @@ public class RunPersonTripAnalysisRuhr {
 			
 		} else {
 
-			runDirectory = "C:\\Users\\Janek\\repos\\runs-svn\\nemo\\baseCaseCalibration2\\baseCase_021/output/";
-			runId = "baseCase_021";
+			runDirectory = "C:\\Users\\Janek\\Desktop\\nemo_drt_output_highPrice";
+			runId = "smartCity";
 
-			runDirectoryToCompareWith = "C:\\Users\\Janek\\Desktop\\output-2";
-			runIdToCompareWith = "smartCity";
+			runDirectoryToCompareWith = "C:\\Users\\Janek\\repos\\runs-svn\\nemo\\baseCaseCalibration2\\baseCase_021/output/";
+			runIdToCompareWith = "baseCase_021";
 
 			scenarioCRS = "EPSG:25832";
 
@@ -114,7 +114,7 @@ public class RunPersonTripAnalysisRuhr {
 
 			@Override
 			public String toFileName() {
-				return "my-pretty-name";
+				return "-all-";
 			}
 		};
 		tripFilters.add(tripFilter);
