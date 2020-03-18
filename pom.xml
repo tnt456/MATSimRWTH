@@ -1,272 +1,267 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.matsim</groupId>
-	<artifactId>matsim-ruhrgebiet</artifactId>
-	<version>1.1.x-SNAPSHOT</version>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.matsim</groupId>
+    <artifactId>matsim-ruhrgebiet</artifactId>
+    <version>1.1.x-SNAPSHOT</version>
 
-	<name>MATSim Open Ruhrgebiet scenario project</name>
-	<description>MATSim Open Ruhrgebiet scenario project</description>
+    <name>MATSim Open Ruhrgebiet scenario project</name>
+    <description>MATSim Open Ruhrgebiet scenario project</description>
 
-	<properties>
-		<!--<matsim.version>12.0-2020w02-SNAPSHOT</matsim.version>-->
-		<matsim.version>12.0-SNAPSHOT</matsim.version>
-	</properties>
+    <properties>
+        <!--<matsim.version>12.0-2020w02-SNAPSHOT</matsim.version>-->
+        <matsim.version>12.0-SNAPSHOT</matsim.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-	<repositories>
-	  <!--Note that in general repositories are not transitive, so they need to be repeated at every level where needed.-->
-		<repository>
-			<!-- Geotools is not on Maven central -->
-			<id>osgeo</id>
-			<name>Geotools repository</name>
-			<url>http://download.osgeo.org/webdav/geotools</url>
-		</repository>
+    <repositories>
+        <!--Note that in general repositories are not transitive, so they need to be repeated at every level where needed.-->
+        <repository>
+            <!-- Geotools is not on Maven central -->
+            <id>osgeo</id>
+            <name>Geotools repository</name>
+            <url>http://download.osgeo.org/webdav/geotools</url>
+        </repository>
 
-		<repository>
-			<!-- Repository for MATSim releases (MATSim is not on Maven central) -->
-			<id>matsim</id>
-			<url>https://dl.bintray.com/matsim/matsim</url>
-		</repository>
+        <repository>
+            <!-- Repository for MATSim releases (MATSim is not on Maven central) -->
+            <id>matsim</id>
+            <url>https://dl.bintray.com/matsim/matsim</url>
+        </repository>
 
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
 
-		<repository>
-			<!-- For MATSim snapshots: -->
-			<id>ojo-snapshots</id>
-			<url>http://oss.jfrog.org/libs-snapshot</url>
-		</repository>
+        <repository>
+            <!-- For MATSim snapshots: -->
+            <id>ojo-snapshots</id>
+            <url>http://oss.jfrog.org/libs-snapshot</url>
+        </repository>
 
-		<repository>
-			<id>topobyte</id>
-			<url>http://mvn.topobyte.de</url>
-		</repository>
-		<repository>
-			<id>slimjars</id>
-			<url>http://mvn.slimjars.com</url>
-		</repository>
-	</repositories>
+        <repository>
+            <id>topobyte</id>
+            <url>http://mvn.topobyte.de</url>
+        </repository>
+        <repository>
+            <id>slimjars</id>
+            <url>http://mvn.slimjars.com</url>
+        </repository>
+    </repositories>
 
-	<dependencies>
-		<dependency>
-			<!-- This is the matsim "core": -->
-			<groupId>org.matsim</groupId>
-			<artifactId>matsim</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
-
-		<dependency>
-			<!-- Include the JUnit testing library.  Not transitive. -->
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<!--MATSim test infrastructure.  Not transitive.-->
-			<groupId>org.matsim</groupId>
-			<artifactId>matsim</artifactId>
-			<type>test-jar</type>
-			<version>${matsim.version}</version>
-			<scope>test</scope>
-		</dependency>
-        
+    <dependencies>
         <dependency>
-        	<groupId>org.matsim.contrib</groupId>
-        	<artifactId>emissions</artifactId>
-        	<version>${matsim.version}</version>
-        	<scope>compile</scope>
-      	</dependency>
+            <!-- This is the matsim "core": -->
+            <groupId>org.matsim</groupId>
+            <artifactId>matsim</artifactId>
+            <version>${matsim.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>noise</artifactId>
-			<version>${matsim.version}</version>
-			<scope>compile</scope>
-		</dependency>
+        <dependency>
+            <!-- Include the JUnit testing library.  Not transitive. -->
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>accessibility</artifactId>
-			<version>${matsim.version}</version>
-			<scope>compile</scope>
-		</dependency>
+        <dependency>
+            <!--MATSim test infrastructure.  Not transitive.-->
+            <groupId>org.matsim</groupId>
+            <artifactId>matsim</artifactId>
+            <type>test-jar</type>
+            <version>${matsim.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>bicycle</artifactId>
-			<version>${matsim.version}</version>
-			<scope>compile</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>emissions</artifactId>
+            <version>${matsim.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>osm</artifactId>
-			<version>${matsim.version}</version>
-			<scope>compile</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>noise</artifactId>
+            <version>${matsim.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>av</artifactId>
-			<version>${matsim.version}</version>
-			<scope>compile</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>accessibility</artifactId>
+            <version>${matsim.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>dvrp</artifactId>
-			<version>${matsim.version}</version>
-			<scope>compile</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>bicycle</artifactId>
+            <version>${matsim.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>com.github.matsim-org</groupId>
-			<artifactId>GTFS2MATSim</artifactId>
-			<version>11.1</version>
-		</dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>osm</artifactId>
+            <version>${matsim.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-csv</artifactId>
-			<version>1.6</version>
-		</dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>av</artifactId>
+            <version>${matsim.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>4.1.1</version>
-		</dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>dvrp</artifactId>
+            <version>${matsim.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>com.beust</groupId>
-			<artifactId>jcommander</artifactId>
-			<version>1.71</version>
-		</dependency>
+        <dependency>
+            <groupId>com.github.matsim-org</groupId>
+            <artifactId>GTFS2MATSim</artifactId>
+            <version>11.1</version>
+        </dependency>
 
-		<!--<dependency>
-	    	<groupId>com.github.matsim-vsp</groupId>
-	    	<artifactId>matsim-analysis</artifactId>
-	    	<version>060df242b2</version>
-		</dependency>-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.6</version>
+        </dependency>
 
-		<dependency>
-			<groupId>com.github.matsim-vsp</groupId>
-			<artifactId>matsim-analysis</artifactId>
-			<version>v2.6</version>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.1</version>
+        </dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+            <version>1.71</version>
+        </dependency>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-				<configuration>
-					<release>11</release>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>true</downloadJavadocs>
-				</configuration>
-			</plugin>
-			
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.19</version>
-				<configuration>
-					<excludes>
-						<exclude>**/*$*</exclude> <!-- exclude all inner classes -->
-						<exclude>org/matsim/testcases/TestDepth.java</exclude>
-						<exclude>org/matsim/testcases/MatsimTestCase.java</exclude>
-					</excludes>
-					<forkMode>once</forkMode>
-					<!-- avoid out of memory errors: -->
-					<argLine>-Xmx6000m -Djava.awt.headless=true -Dmatsim.preferLocalDtds=true</argLine>
-					<!--necessary in tu berlin gitlab. BUT not good in other places, so solve by command line switch only where needed.  kai, nov'18-->
-					<!--<useSystemClassLoader>false</useSystemClassLoader>-->
-				</configuration>
-			</plugin>
-			
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>org.matsim.ruhrgebiet.gui.MATSimGUI</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			
-			<plugin>  <!-- Create sources.jar -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			
-		</plugins>
-	</build>
-	
-	<profiles>
-		<profile>
-			<id>release</id>
-			<build>
-				<defaultGoal>assembly:assembly</defaultGoal>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<artifactId>maven-assembly-plugin</artifactId>
-							<configuration>
-								<descriptors>
-									<descriptor>src/main/assembly/assembly-release.xml</descriptor>
-								</descriptors>
-							</configuration>
-						</plugin>
-						<plugin>
-							<artifactId>maven-jar-plugin</artifactId>
-							<configuration>
-								<archive>
-									<manifest>
-										<addClasspath>true</addClasspath>
-										<classpathPrefix>libs/</classpathPrefix>
-									</manifest>
-								</archive>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
-	</profiles>
+        <!--<dependency>
+            <groupId>com.github.matsim-vsp</groupId>
+            <artifactId>matsim-analysis</artifactId>
+            <version>060df242b2</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>com.github.matsim-vsp</groupId>
+            <artifactId>matsim-analysis</artifactId>
+            <version>v2.6</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*$*</exclude> <!-- exclude all inner classes -->
+                        <exclude>org/matsim/testcases/TestDepth.java</exclude>
+                        <exclude>org/matsim/testcases/MatsimTestCase.java</exclude>
+                    </excludes>
+                    <forkMode>once</forkMode>
+                    <!-- avoid out of memory errors: -->
+                    <argLine>-Xmx6000m -Djava.awt.headless=true -Dmatsim.preferLocalDtds=true</argLine>
+                    <!--necessary in tu berlin gitlab. BUT not good in other places, so solve by command line switch only where needed.  kai, nov'18-->
+                    <!--<useSystemClassLoader>false</useSystemClassLoader>-->
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.matsim.ruhrgebiet.gui.MATSimGUI</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>  <!-- Create sources.jar -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <defaultGoal>assembly:assembly</defaultGoal>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-assembly-plugin</artifactId>
+                            <configuration>
+                                <descriptors>
+                                    <descriptor>src/main/assembly/assembly-release.xml</descriptor>
+                                </descriptors>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <artifactId>maven-jar-plugin</artifactId>
+                            <configuration>
+                                <archive>
+                                    <manifest>
+                                        <addClasspath>true</addClasspath>
+                                        <classpathPrefix>libs/</classpathPrefix>
+                                    </manifest>
+                                </archive>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 </project>
