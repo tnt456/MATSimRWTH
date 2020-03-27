@@ -27,79 +27,94 @@ import org.matsim.analysis.TripFilter;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RunPersonTripAnalysisRuhr {
 	private static final Logger log = Logger.getLogger(RunPersonTripAnalysisRuhr.class);
-			
-	public static void main(String[] args) throws IOException {
-			
-		String runDirectory = null;
-		String runId = null;
-		String runDirectoryToCompareWith = null;
-		String runIdToCompareWith = null;
-		String scenarioCRS = null;	
-		String shapeFileZones = null;
-		String zonesCRS = null;
-		String zoneFile = null;
-		String zoneId = null;
-		String homeActivityPrefix = null;
+
+	public static void main(String[] args) {
+
+		String runDirectory;
+		String runId;
+		String runDirectoryToCompareWith;
+		String runIdToCompareWith;
+		String scenarioCRS;
+		String shapeFileZones;
+		String zonesCRS;
+		String zoneFile;
+		String zoneId;
+		String homeActivityPrefix;
 		int scalingFactor;
-		String modesString = null;
-		String analysisOutputDirectory = null;
-				
+		String analysisOutputDirectory;
+
 		if (args.length > 0) {
 			throw new RuntimeException();
-			
+
 		} else {
 
-			runDirectory = "C:\\Users\\Janek\\Desktop\\nemo_drt_output_highPrice";
-			runId = "smartCity";
+			runDirectory = "C:\\Users\\Janekdererste\\Desktop\\deurb-no-drt/";
+			runId = "deurbanisation-no-drt";
 
-			runDirectoryToCompareWith = "C:\\Users\\Janek\\repos\\runs-svn\\nemo\\baseCaseCalibration2\\baseCase_021/output/";
+			runDirectoryToCompareWith = "C:\\Users\\Janekdererste\\repos\\runs-svn\\nemo\\baseCaseCalibration2\\baseCase_021/output/";
 			runIdToCompareWith = "baseCase_021";
 
 			scenarioCRS = "EPSG:25832";
 
-			shapeFileZones = "C:/Users/Janek/repos/shared-svn/projects/nemo_mercator/data/original_files/shapeFiles/plzBasedPopulation/plz-gebiete_Ruhrgebiet/plz-gebiete_Ruhrgebiet.shp";
+			shapeFileZones = "C:/Users/Janekdererste/repos/shared-svn/projects/nemo_mercator/data/original_files/shapeFiles/plzBasedPopulation/plz-gebiete_Ruhrgebiet/plz-gebiete_Ruhrgebiet.shp";
 			zonesCRS = "EPSG:25832";
 			zoneId = "plz";
 
-			zoneFile = "C:/Users/Janek/repos/shared-svn/projects/nemo_mercator/data/original_files/shapeFiles/shapeFile_Ruhrgebiet/ruhrgebiet_boundary.shp";
+			zoneFile = "C:/Users/Janekdererste/repos/shared-svn/projects/nemo_mercator/data/original_files/shapeFiles/shapeFile_Ruhrgebiet/ruhrgebiet_boundary.shp";
 
 			homeActivityPrefix = "home";
 			scalingFactor = 100;
 
-			modesString = TransportMode.car + "," + TransportMode.pt + "," + TransportMode.bike + "," + TransportMode.walk + "," + TransportMode.ride + "," + TransportMode.drt;
-
-			analysisOutputDirectory = "./scenarios/outputXXX/";
+			analysisOutputDirectory = "C:/Users/Janekdererste/Desktop/nemo-analysis-ihab/smart-low-fare/";
 		}
 		
 		Scenario scenario1 = loadScenario(runDirectory, runId);
 		Scenario scenario0 = loadScenario(runDirectoryToCompareWith, runIdToCompareWith);
 		
 		List<AgentFilter> agentFilters = new ArrayList<>();
-		
+
 		AgentAnalysisFilter filter1 = new AgentAnalysisFilter("all-agents");
 		filter1.preProcess(scenario1);
 		agentFilters.add(filter1);
-		
+
 		AgentAnalysisFilter filter2 = new AgentAnalysisFilter("ruhrgebiet-agents");
 		filter2.setZoneFile(zoneFile);
 		filter2.setRelevantActivityType(homeActivityPrefix);
 		filter2.preProcess(scenario1);
 		agentFilters.add(filter2);
 
-		List<String> modes = new ArrayList<>();
-		for (String mode : modesString.split(",")) {
-			modes.add(mode);
-		}
+		agentFilters.add(new AgentFilter() {
+			@Override
+			public boolean considerAgent(Person person) {
+				return person.getAttributes().getAttribute("was_moved") != null;
+			}
+
+			@Override
+			public String toFileName() {
+				return "-moved-";
+			}
+		});
+		agentFilters.add(new AgentFilter() {
+			@Override
+			public boolean considerAgent(Person person) {
+				return person.getAttributes().getAttribute("was_moved") != null && person.getAttributes().getAttribute("moved-all-activities") != null;
+			}
+
+			@Override
+			public String toFileName() {
+				return "-moved-all-act-";
+			}
+		});
 
 		MatsimAnalysis analysis = new MatsimAnalysis();
 		analysis.setScenario1(scenario1);
@@ -124,13 +139,13 @@ public class RunPersonTripAnalysisRuhr {
 		analysis.setScenarioCRS(scenarioCRS);
 		analysis.setZoneInformation(shapeFileZones, zonesCRS, zoneId);
 
-		analysis.setModes(modes);
+		analysis.setModes(List.of(TransportMode.car, TransportMode.pt, TransportMode.bike, TransportMode.walk, TransportMode.ride, TransportMode.drt));
 		analysis.setVisualizationScriptInputDirectory(null);
 		analysis.setHomeActivityPrefix(homeActivityPrefix);
 		analysis.setScalingFactor(scalingFactor);
-		
+
 		analysis.setAnalysisOutputDirectory(analysisOutputDirectory);
-		
+
 		analysis.run();
 	}
 	

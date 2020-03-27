@@ -19,6 +19,8 @@
 
 package org.matsim.ruhrgebiet.analysis;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -50,13 +52,40 @@ public class RunOfflineAirPollutionAnalysis {
 	//private final static String runDirectory = "public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/output-ruhrgebiet-v1.0-1pct/";
 	//private final static String runId = "ruhrgebiet-v1.0-1pct";
 
-	private final static String runDirectory = "C:\\Users\\Janek\\repos\\runs-svn\\nemo\\wissenschaftsforum2019_simulationsbasierteZukunftsforschung\\run3_gesundeStadt-mit-RSV\\";
-	private final static String runId = "run3_gesundeStadt-mit-RSV";
+	//private final static String runDirectory = "C:\\Users\\Janek\\repos\\runs-svn\\nemo\\wissenschaftsforum2019_simulationsbasierteZukunftsforschung\\run3_gesundeStadt-mit-RSV\\";
+	//private final static String runId = "run3_gesundeStadt-mit-RSV";
 
-	private final static String hbefaFileCold = "C:/Users/Janek/repos/shared-svn/projects/detailedEval/emissions/hbefaForMatsim/new/EFA_ColdStart_vehcat_2005average.txt";
-	private final static String hbefaFileWarm = "C:/Users/Janek/repos/shared-svn/projects/detailedEval/emissions/hbefaForMatsim/new/EFA_HOT_vehcat_2005average.txt";
+	//private final static String hbefaFileCold = "C:/Users/Janek/repos/shared-svn/projects/detailedEval/emissions/hbefaForMatsim/new/EFA_ColdStart_vehcat_2005average.txt";
+	//private final static String hbefaFileWarm = "C:/Users/Janek/repos/shared-svn/projects/detailedEval/emissions/hbefaForMatsim/new/EFA_HOT_vehcat_2005average.txt";
 
+	@Parameter(names = {"-sharedSvn", "-svn"}, required = true)
+	private String sharedSvn = "";
+
+	@Parameter(names = {"-runId", "-rId"}, required = true)
+	private String runId = "";
+
+	@Parameter(names = {"-runDir", "-dir"}, required = true)
+	private String runDirectory = "";
+
+	/**
+	 * Run this to genereate emission events
+	 *
+	 * @param args Command line args to configure the script. works like: -svn /path/to/your/shared-svn/root/ -rId your-run-id -dir /path/to/results/directory/
+	 */
 	public static void main(String[] args) {
+
+		var analysis = new RunOfflineAirPollutionAnalysis();
+		JCommander.newBuilder().addObject(analysis).build().parse(args);
+		analysis.run();
+	}
+
+	private void run() {
+
+		runDirectory = (runDirectory.endsWith("/") || runDirectory.endsWith("\\")) ? runDirectory : runDirectory + "/";
+		sharedSvn = (sharedSvn.endsWith("/") || sharedSvn.endsWith("\\")) ? sharedSvn : sharedSvn + "/";
+
+		final String hbefaFileCold = sharedSvn + "projects/matsim-germany/hbefa/hbefa-files/v3.2/EFA_ColdStart_vehcat_2005average.txt";
+		final String hbefaFileWarm = sharedSvn + "projects/matsim-germany/hbefa/hbefa-files/v3.2/EFA_HOT_vehcat_2005average.txt";
 
 		Logger.getRootLogger().setLevel(Level.WARN);
 
@@ -92,7 +121,7 @@ public class RunOfflineAirPollutionAnalysis {
 				freespeed = link.getFreespeed();
 				// for motorways, the original speed levels seems ok.
 			}
-			
+
 			if(freespeed <= 8.333333333){ //30kmh
 				link.getAttributes().putAttribute("hbefa_road_type", "URB/Access/30");
 			} else if(freespeed <= 11.111111111){ //40kmh
@@ -148,22 +177,21 @@ public class RunOfflineAirPollutionAnalysis {
 			public void install() {
 				bind(Scenario.class).toInstance(scenario);
 				bind(EventsManager.class).toInstance(eventsManager);
-				bind( EmissionModule.class ) ;
+				bind(EmissionModule.class);
 			}
 		};
 
 		com.google.inject.Injector injector = Injector.createInjector(config, module);
 
-        EmissionModule emissionModule = injector.getInstance(EmissionModule.class);
+		EmissionModule emissionModule = injector.getInstance(EmissionModule.class);
 
-        EventWriterXML emissionEventWriter = new EventWriterXML(emissionEventOutputFile);
-        emissionModule.getEmissionEventsManager().addHandler(emissionEventWriter);
+		EventWriterXML emissionEventWriter = new EventWriterXML(emissionEventOutputFile);
+		emissionModule.getEmissionEventsManager().addHandler(emissionEventWriter);
 
-        MatsimEventsReader matsimEventsReader = new MatsimEventsReader(eventsManager);
-        matsimEventsReader.readFile(eventsFile);
+		MatsimEventsReader matsimEventsReader = new MatsimEventsReader(eventsManager);
+		matsimEventsReader.readFile(eventsFile);
 
-        emissionEventWriter.closeFile();
-        
+		emissionEventWriter.closeFile();
 	}
 
 }
