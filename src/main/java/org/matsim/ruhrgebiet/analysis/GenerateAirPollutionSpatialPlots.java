@@ -18,6 +18,8 @@
  * *********************************************************************** */
 package org.matsim.ruhrgebiet.analysis;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.log4j.Logger;
@@ -45,45 +47,41 @@ import java.util.Map;
 public class GenerateAirPollutionSpatialPlots {
 	private static final Logger log = Logger.getLogger(GenerateAirPollutionSpatialPlots.class);
 
-    private final double countScaleFactor;
-    private final double gridSize;
-    private final double smoothingRadius;
-    
-    private static final double xMin = 317373;
-    private static final double yMin = 5675521.;
-    private static final double xMax = 418575.;
-    private static final double yMax = 5736671.;
+	private static final double xMin = 317373;
+	private static final double yMin = 5675521.;
+	private static final double xMax = 418575.;
+	private static final double yMax = 5736671.;
 
-    private GenerateAirPollutionSpatialPlots(final double gridSize, final double smoothingRadius, final double countScaleFactor) {
-        this.gridSize = gridSize;
-        this.smoothingRadius = smoothingRadius;
-        this.countScaleFactor = countScaleFactor;
-    }
+	private static final double gridSize = 100.;
+	private static final double smoothingRadius = 500.;
+	private static final double scaleFactor = 100.;
+
+	@Parameter(names = {"-dir"}, required = true)
+	private String runDir = "";
+
+	@Parameter(names = {"-runId"}, required = true)
+	private String runId = "";
+
+	private GenerateAirPollutionSpatialPlots() {
+
+	}
 
 	public static void main(String[] args) {
 
-		final double gridSize = 100.;
-		final double smoothingRadius = 500.;
-		final double scaleFactor = 100.;
+		GenerateAirPollutionSpatialPlots plots = new GenerateAirPollutionSpatialPlots();
 
-		//final String runDir = rootDirectory + "public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/output-ruhrgebiet-v1.0-1pct/";
-		final String runDir = "C:\\Users\\Janek\\Desktop\\output-2\\";
-		//final String runId = "ruhrgebiet-v1.0-1pct";
-		final String runId = "smartCity";
-		final String ruhrShape = "C:\\Users\\Janek\\repos\\shared-svn\\projects\\nemo_mercator\\data\\matsim_input\\smartCity\\ruhrgebiet_boundary.shp";
+		JCommander.newBuilder().addObject(plots).build().parse(args);
 
-		GenerateAirPollutionSpatialPlots plots = new GenerateAirPollutionSpatialPlots(gridSize, smoothingRadius, scaleFactor);
+		plots.writeEmissions();
+	}
+
+	private void writeEmissions() {
 
 		final String configFile = runDir + runId + ".output_config.xml";
 		final String events = runDir + runId + ".emission.events.offline.xml.gz";
 		final String outputFile = runDir + runId + ".NOx";
 
-		plots.writeEmissions(configFile, events, outputFile, runDir, runId, ruhrShape);
-	}
-
-	private void writeEmissions(String configPath, String eventsPath, String outputFile, String runDir, String runId, String shapeFile) {
-
-		Config config = ConfigUtils.loadConfig(configPath);
+		Config config = ConfigUtils.loadConfig(configFile);
 		config.plans().setInputFile(null);
 		config.transit().setTransitScheduleFile(null);
 		config.transit().setVehiclesFile(null);
@@ -94,23 +92,18 @@ public class GenerateAirPollutionSpatialPlots {
 		double binSize = 200000; // make the bin size bigger than the scenario has seconds
 		Network network = scenario.getNetwork();
 
-       /* var geometry = ShapeFileReader.getAllFeatures(shapeFile).stream()
-				.map(simpleFeature -> (Geometry)simpleFeature.getDefaultGeometry())
-				.findFirst()
-				.orElseThrow();
-*/
 		EmissionGridAnalyzer analyzer = new EmissionGridAnalyzer.Builder()
 				.withGridSize(gridSize)
 				.withTimeBinSize(binSize)
 				.withNetwork(network)
 				.withBounds(createBoundingBox())
 				.withSmoothingRadius(smoothingRadius)
-				.withCountScaleFactor(countScaleFactor)
+				.withCountScaleFactor(scaleFactor)
 				.withGridType(EmissionGridAnalyzer.GridType.Square)
 				.build();
 
-		TimeBinMap<Grid<Map<Pollutant, Double>>> timeBins = analyzer.process(eventsPath);
-		//analyzer.processToJsonFile(eventsPath, outputFile + ".json");
+		TimeBinMap<Grid<Map<Pollutant, Double>>> timeBins = analyzer.process(events);
+		//analyzer.processToJsonFile(events, outputFile + ".json");
 
 		log.info("Writing to csv...");
 		writeGridToCSV(timeBins, Pollutant.NOx, outputFile + ".csv");
@@ -118,14 +111,37 @@ public class GenerateAirPollutionSpatialPlots {
 
 	private void writeGridToCSV(TimeBinMap<Grid<Map<Pollutant, Double>>> bins, Pollutant pollutant, String outputPath) {
 
-		try (CSVPrinter printer = new CSVPrinter(new FileWriter(outputPath), CSVFormat.TDF)) {
-			printer.printRecord("timeBinStartTime", "centroidX", "centroidY", "weight");
+		var pollutants = Pollutant.values();
 
+		try (CSVPrinter printer = new CSVPrinter(new FileWriter(outputPath), CSVFormat.TDF)) {
+
+			//print header with all possible pollutants
+			printer.print("timeBinStartTime");
+			printer.print("x");
+			printer.print("y");
+
+			for (var p : pollutants) {
+				printer.print(p.toString());
+			}
+			printer.println();
+
+			//print values if pollutant was not present just print 0 instead
 			for (TimeBinMap.TimeBin<Grid<Map<Pollutant, Double>>> bin : bins.getTimeBins()) {
 				final double timeBinStartTime = bin.getStartTime();
 				for (Grid.Cell<Map<Pollutant, Double>> cell : bin.getValue().getCells()) {
-					double weight = cell.getValue().containsKey(pollutant) ? cell.getValue().get(pollutant) : 0;
-					printer.printRecord(timeBinStartTime, cell.getCoordinate().x, cell.getCoordinate().y, weight);
+
+					printer.print(timeBinStartTime);
+					printer.print(cell.getCoordinate().x);
+					printer.print(cell.getCoordinate().y);
+
+					for (var p : pollutants) {
+						if (cell.getValue().containsKey(p)) {
+							printer.print(cell.getValue().get(p));
+						} else {
+							printer.print(0);
+						}
+					}
+					printer.println();
 				}
 			}
         } catch (IOException e) {
