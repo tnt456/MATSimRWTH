@@ -151,31 +151,28 @@
             <version>1.71</version>
         </dependency>
 
-        <!--<dependency>
-            <groupId>com.github.matsim-vsp</groupId>
-            <artifactId>matsim-analysis</artifactId>
-            <version>060df242b2</version>
-        </dependency>-->
-
         <dependency>
             <groupId>com.github.matsim-vsp</groupId>
             <artifactId>matsim-analysis</artifactId>
+            <version>060df242b2</version>
+        </dependency>
+
+        <!--<dependency>
+            <groupId>com.github.matsim-vsp</groupId>
+            <artifactId>matsim-analysis</artifactId>
             <version>v2.6</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>com.github.BauhausLuftfahrt</groupId>
+            <artifactId>MATSim-UAM</artifactId>
+            <version>v2.0</version>
         </dependency>
 
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <configuration>
-                    <downloadSources>true</downloadSources>
-                    <downloadJavadocs>true</downloadJavadocs>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
