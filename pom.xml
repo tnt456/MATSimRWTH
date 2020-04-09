@@ -51,6 +51,12 @@
             <id>slimjars</id>
             <url>http://mvn.slimjars.com</url>
         </repository>
+
+        <repository>
+            <id>matsim-eth</id>
+            <url>https://dl.bintray.com/matsim-eth/matsim</url>
+        </repository>
+
     </repositories>
 
     <dependencies>
@@ -151,22 +157,28 @@
             <version>1.71</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.matsim-vsp</groupId>
-            <artifactId>matsim-analysis</artifactId>
-            <version>060df242b2</version>
-        </dependency>
-
         <!--<dependency>
             <groupId>com.github.matsim-vsp</groupId>
             <artifactId>matsim-analysis</artifactId>
-            <version>v2.6</version>
+            <version>060df242b2</version>
         </dependency>-->
+
+        <dependency>
+            <groupId>com.github.matsim-vsp</groupId>
+            <artifactId>matsim-analysis</artifactId>
+            <version>v2.4</version>
+        </dependency>
 
         <dependency>
             <groupId>com.github.BauhausLuftfahrt</groupId>
             <artifactId>MATSim-UAM</artifactId>
             <version>v2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.ethz.matsim</groupId>
+            <artifactId>discrete_mode_choice</artifactId>
+            <version>1.0.9</version>
         </dependency>
 
     </dependencies>
