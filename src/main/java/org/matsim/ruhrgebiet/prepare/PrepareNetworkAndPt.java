@@ -26,7 +26,7 @@ import org.matsim.ruhrgebiet.prepare.counts.CombinedCountsWriter;
 import org.matsim.ruhrgebiet.prepare.counts.LongTermCountsCreator;
 import org.matsim.ruhrgebiet.prepare.counts.RawDataVehicleTypes;
 import org.matsim.ruhrgebiet.prepare.counts.ShortTermCountsCreator;
-import org.matsim.vehicles.MatsimVehicleWriter;
+import org.matsim.vehicles.VehicleWriterV1;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -99,7 +99,7 @@ public class PrepareNetworkAndPt {
 
 		var gtfsScenario = new CreatePtScheduleAndVehiclesFromGtfs().run(publicSvn.resolve(gtfsData).toString(), transformation);
 
-		new MatsimVehicleWriter(gtfsScenario.getTransitVehicles()).writeFile(outputDir.resolve("ruhrgebiet-v1.1.transit-vehicles.xml.gz").toString());
+		new VehicleWriterV1(gtfsScenario.getTransitVehicles()).writeFile(outputDir.resolve("ruhrgebiet-v1.1.transit-vehicles.xml.gz").toString());
 		new TransitScheduleWriter(gtfsScenario.getTransitSchedule()).writeFile(outputDir.resolve("ruhrgebiet-v1.1.transit-schedule.xml.gz").toString());
 		MergeNetworks.merge(network, "", gtfsScenario.getNetwork());
 

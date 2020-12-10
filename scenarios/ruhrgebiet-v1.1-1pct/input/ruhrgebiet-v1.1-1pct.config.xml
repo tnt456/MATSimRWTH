@@ -8,10 +8,11 @@
 		<param name="lastIteration" value="500"/>
 		<param name="overwriteFiles" value="deleteDirectoryIfExists"/>
 		<param name="runId" value="ruhrgebiet-v1.1-1pct"/>
-		<param name="outputDirectory" value="./output_ruhrgebiet-v1.1-1pct/"/>
-		<param name="writeEventsInterval" value="100"/>
-		<param name="writePlansInterval" value="100"/>
+		<param name="outputDirectory" value="C:\Users\student\Desktop\Tobias\MATSim output\output_ruhrgebiet-v1.1-1pct_modifiedConfig\"/>
+		<param name="writeEventsInterval" value="1"/>
+		<param name="writePlansInterval" value="1"/>
 		<param name="routingAlgorithmType" value="FastAStarLandmarks"/>
+
 	</module>
 	<module name="global" >
 		<param name="coordinateSystem" value="EPSG:25832" />
@@ -19,20 +20,22 @@
 		<param name="numberOfThreads" value="8" />
 	</module>
 	<module name="network" >
-		<param name="inputNetworkFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-network-without-RSV.xml.gz" />
+		<param name="inputNetworkFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-with-RSV.network.xml.gz" />
 	</module>
 	<module name="plans" >
 		<param name="inputPlansFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-1pct.plans.xml.gz" />
 		<param name="removingUnnecessaryPlanAttributes" value="false" />
+
+
 	</module>
 	<module name="vehicles" >
 		<param name="vehiclesFile"
-			   value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1-mode-vehicles.xml.gz"/>
+			   value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1.mode-vehicles.xml"/>
 	</module>
 	<module name="transit" >
-		<param name="transitScheduleFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-transit-schedule.xml.gz" />
+		<param name="transitScheduleFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1.transit-schedule.xml.gz" />
 		<param name="useTransit" value="true" />
-		<param name="vehiclesFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.0-1pct/input/ruhrgebiet-v1.0-transit-vehicles.xml.gz" />
+		<param name="vehiclesFile" value="https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/ruhrgebiet/ruhrgebiet-v1.1-1pct/input/ruhrgebiet-v1.1.transit-vehicles.xml.gz" />
 	</module>
 	<module name="planscalcroute" >
 		<param name="networkModes" value="car,ride,bike" />
@@ -59,6 +62,10 @@
 		<param name="trafficDynamics" value="kinematicWaves" />
 		<param name="vehiclesSource" value="modeVehicleTypesFromVehiclesData" />
 		<param name="insertingWaitingVehiclesBeforeDrivingVehicles" value="true" />
+		<param name="snapshotStyle" value="kinematicWaves"/>
+		<param name="snapshotperiod" value="01:00:00"/>
+		<param name="useLanes" value="true"/>
+		<param name="vehicleBehavior" value="wait"/>
 	</module>
 	<module name="strategy" >
 		<parameterset type="strategysettings" >
@@ -86,13 +93,17 @@
 			<param name="weight" value="0.05" />
 			<param name="disableAfterIteration" value="400" />
 		</parameterset>
+		<param name="fractionOfIterationsToDisableInnovation" value="0.8" />
+		<param name="maxAgentPlanMemorySize" value="1"/>
 	</module>
 	<module name="subtourModeChoice" >
 		<param name="chainBasedModes" value="car,bike" />
 		<param name="modes" value="car,pt,bike,walk" />
+		<param name="considerCarAvailability" value="true"/>
 	</module>
 	<module name="transitRouter" >
 		<param name="extensionRadius" value="500.0" />
+		<param name="directWalkFactor" value="10"/>
 	</module>
 	<module name="travelTimeCalculator" >
 		<param name="analyzedModes" value="car,bike" />
@@ -101,7 +112,9 @@
 		<param name="vspDefaultsCheckingLevel" value="warn" />
 	</module>
 	<module name="planCalcScore" >
-		<param name="fractionOfIterationsToStartScoreMSA" value="1.0" />
+		<param name="fractionOfIterationsToStartScoreMSA" value="0.8" />
+		<param name="learningRate" value="0.8"/>
+		<param name="writeExperiencedPlans" value="true"/>
 		<parameterset type="scoringParameters" >
 			<parameterset type="modeParams" >
 				<param name="mode" value="car" />
@@ -142,4 +155,40 @@
 			</parameterset>
 		</parameterset>
 	</module>
+	<module name="DiscreteModeChoice">
+		<param name="modelType" value="Tour" />
+		<param name="selector" value="MultinomialLogit" />
+		<param name="tourConstraints" value="VehicleContinuity,SubtourMode" />
+		<param name="tourFinder" value="PlanBased" />
+		<param name="tourEstimator" value="MATSimDayScoring" />
+		<param name="enforceSinglePlan" value="false"/>
+
+		<parameterset type="modeAvailability:Car">
+			<param name="availableModes" value="pt, car, walk, bike" />
+		</parameterset>
+		<parameterset type="selector:MultinomialLogit">
+			<param name="considerMinimumUtility" value="true"/>
+			<param name="maximumUtility" value="700"/>
+			<param name="minimumUtility" value="-700"/>
+		</parameterset>
+		<parameterset type="tourConstraint:SubtourMode">
+			<param name="constrainedModes" value="car,pt,walk,bike"/>
+		</parameterset>
+		<parameterset type="tourConstraint:VehicleContinuity">
+			<param name="homeActivityType" value="home"/>
+			<param name="homeType" value="USE_ACTIVITY_TYPE"/>
+			<param name="restrictedModes" value="car,bike"/>
+		</parameterset>
+		<parameterset type="tourFilter:TourLength">
+			<param name="maximumLength" value="15"/>
+		</parameterset>
+
+	</module>
+	
+	<module name="changeMode">
+		<param name="ignoreCarAvailability" value="false"/>
+		<param name="modes" value="car,pt,bike,walk"/>
+	</module>
+
+
 </config>

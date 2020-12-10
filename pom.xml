@@ -18,44 +18,96 @@
     </properties>
 
     <repositories>
-        <!--Note that in general repositories are not transitive, so they need to be repeated at every level where needed.-->
-        <repository>
-            <!-- Geotools is not on Maven central -->
-            <id>osgeo</id>
-            <name>Geotools repository</name>
-            <url>http://download.osgeo.org/webdav/geotools</url>
-        </repository>
 
         <repository>
-            <!-- Repository for MATSim releases (MATSim is not on Maven central) -->
+            <id>spring.io</id>
+            <url>https://repo.spring.io/plugins-release/</url>
+        </repository>
+
+        <!--Note that in general repositories are not transitive, so they need to be repeated at every level where needed.-->
+       <repository>
+            <id>osgeo</id>
+            <name>Geotools repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+        </repository>
+
+        <!--
+        <repository>
+            <id>osgeo-snapshot</id>
+            <name>OSGeo Snapshot Repository</name>
+            <url>https://repo.osgeo.org/repository/snapshot/</url>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+        </repository>
+-->
+       <repository>
             <id>matsim</id>
             <url>https://dl.bintray.com/matsim/matsim</url>
         </repository>
+
 
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
 
+
+        <!--
         <repository>
-            <!-- For MATSim snapshots: -->
             <id>ojo-snapshots</id>
             <url>http://oss.jfrog.org/libs-snapshot</url>
         </repository>
+-->
 
         <repository>
             <id>topobyte</id>
             <url>http://mvn.topobyte.de</url>
         </repository>
+
+
         <repository>
             <id>slimjars</id>
             <url>http://mvn.slimjars.com</url>
         </repository>
 
+
         <repository>
             <id>matsim-eth</id>
             <url>https://dl.bintray.com/matsim-eth/matsim</url>
         </repository>
+
+        <!--
+        <repository>
+            <id>SBB</id>
+            <url>https://bintray.com/schweizerischebundesbahnen/simba.mvn/matsim-sbb-extensions</url>
+        </repository>
+-->
+
+        <repository>
+            <id>swiss-rail</id>
+            <url>https://schweizerischebundesbahnen.bintray.com/simba.mvn</url>
+        </repository>
+
+        <!--
+        <repository>
+            <id>eth-ivt-matsim</id>
+            <url>https://packagecloud.io/eth-ivt/matsim/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+-->     <repository>
+            <id>conveyal</id>
+            <url>maven.conveyal.com/release</url>
+        </repository>
+
+        <!--<repository>
+            <id>OneBusAway</id>
+            <url>http://nexus.onebusaway.org/nexus/content/repositories/public/</url>
+        </repository>-->
 
     </repositories>
 
@@ -64,7 +116,7 @@
             <!-- This is the matsim "core": -->
             <groupId>org.matsim</groupId>
             <artifactId>matsim</artifactId>
-            <version>${matsim.version}</version>
+            <version>12.0</version>
         </dependency>
 
         <dependency>
@@ -80,56 +132,56 @@
             <groupId>org.matsim</groupId>
             <artifactId>matsim</artifactId>
             <type>test-jar</type>
-            <version>${matsim.version}</version>
+            <version>12.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.matsim.contrib</groupId>
             <artifactId>emissions</artifactId>
-            <version>${matsim.version}</version>
+            <version>12.0</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.matsim.contrib</groupId>
             <artifactId>noise</artifactId>
-            <version>${matsim.version}</version>
+            <version>12.0</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.matsim.contrib</groupId>
             <artifactId>accessibility</artifactId>
-            <version>${matsim.version}</version>
+            <version>12.0</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.matsim.contrib</groupId>
             <artifactId>bicycle</artifactId>
-            <version>${matsim.version}</version>
+            <version>12.0</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.matsim.contrib</groupId>
             <artifactId>osm</artifactId>
-            <version>${matsim.version}</version>
+            <version>12.0</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.matsim.contrib</groupId>
             <artifactId>av</artifactId>
-            <version>${matsim.version}</version>
+            <version>12.0</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.matsim.contrib</groupId>
             <artifactId>dvrp</artifactId>
-            <version>${matsim.version}</version>
+            <version>12.0</version>
             <scope>compile</scope>
         </dependency>
 
@@ -154,32 +206,92 @@
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
-            <version>1.71</version>
+            <version>1.78</version>
         </dependency>
-
-        <!--<dependency>
-            <groupId>com.github.matsim-vsp</groupId>
-            <artifactId>matsim-analysis</artifactId>
-            <version>060df242b2</version>
-        </dependency>-->
 
         <dependency>
             <groupId>com.github.matsim-vsp</groupId>
             <artifactId>matsim-analysis</artifactId>
-            <version>v2.4</version>
+            <version>060df242b2</version>
         </dependency>
 
-        <dependency>
+       <dependency>
             <groupId>com.github.BauhausLuftfahrt</groupId>
             <artifactId>MATSim-UAM</artifactId>
-            <version>v2.0</version>
+            <version>v2.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}\src\main\resources\matsim-uam-2.1.jar</systemPath>
         </dependency>
+        <!--<dependency>
+            <groupId>com.github.BauhausLuftfahrt</groupId>
+            <artifactId>MATSim-UAM</artifactId>
+            <version>v2.1</version>
+        </dependency>-->
 
         <dependency>
             <groupId>ch.ethz.matsim</groupId>
             <artifactId>discrete_mode_choice</artifactId>
             <version>1.0.9</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.conveyal/jackson2-geojson -->
+        <!--<dependency>
+            <groupId>com.conveyal</groupId>
+            <artifactId>jackson2-geojson</artifactId>
+            <version>0.8</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>com.conveyal</groupId>
+            <artifactId>jackson2-geojson</artifactId>
+            <version>0.9</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}\src\main\resources\jackson2-geojson-0.9.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.sbb</groupId>
+            <artifactId>matsim-sbb-extensions</artifactId>
+            <version>12.13</version> <!-- replace this with latest available version -->
+        </dependency>
+
+
+        <dependency>
+            <groupId>ch.ethz.matsim</groupId>
+            <artifactId>baseline_scenario</artifactId>
+            <version>0.3.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}\src\main\resources\baseline_scenario-0.3.2.jar</systemPath>
+        </dependency>
+
+        <!--<dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>ch.ethz.matsim</groupId>
+            <artifactId>av</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.matsim/matsim-examples -->
+        <dependency>
+            <groupId>org.matsim</groupId>
+            <artifactId>matsim-examples</artifactId>
+            <version>12.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.matsim.contrib/decongestion -->
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>decongestion</artifactId>
+            <version>12.0</version>
+        </dependency>
+
+
 
     </dependencies>
 
@@ -202,7 +314,7 @@
                     <!--<useSystemClassLoader>false</useSystemClassLoader>-->
                 </configuration>
             </plugin>
-
+            
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
@@ -211,8 +323,15 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.matsim.ruhrgebiet.gui.MATSimGUI</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addClasspath>true</addClasspath>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <mainClass>org.matsim.ruhrgebiet.run.RunRuhrgebietScenario</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Specification-Vendor>RWTH-Aachen</Specification-Vendor>
+                            <Implementation-Vendor>RWTH-Aachen</Implementation-Vendor>
+                        </manifestEntries>
                     </archive>
                 </configuration>
                 <executions>
@@ -229,6 +348,7 @@
             <plugin>  <!-- Create sources.jar -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
