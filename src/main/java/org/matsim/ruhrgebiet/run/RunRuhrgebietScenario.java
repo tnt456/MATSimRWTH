@@ -31,6 +31,7 @@ import net.bhl.matsim.uam.config.UAMConfigGroup;
 import net.bhl.matsim.uam.data.UAMFleetData;
 import net.bhl.matsim.uam.dispatcher.UAMManager;
 import net.bhl.matsim.uam.infrastructure.UAMStations;
+import net.bhl.matsim.uam.infrastructure.UAMVehicle;
 import net.bhl.matsim.uam.infrastructure.UAMVehicleType;
 import net.bhl.matsim.uam.infrastructure.readers.UAMXMLReader;
 import net.bhl.matsim.uam.qsim.UAMQsimModule;
@@ -46,7 +47,10 @@ import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.contrib.bicycle.BicycleConfigGroup;
 import org.matsim.contrib.bicycle.Bicycles;
+import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
+import org.matsim.contrib.dvrp.schedule.Schedule;
+import org.matsim.contrib.dvrp.schedule.Schedules;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
@@ -62,11 +66,7 @@ import org.matsim.core.controler.ControlerUtils;
 import org.matsim.vehicles.VehicleType;
 import org.matsim.vehicles.VehicleUtils;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class RunRuhrgebietScenario {
 
@@ -184,8 +184,9 @@ public class RunRuhrgebietScenario {
 
 		// populate UAMManager
 		uamManager.setStations(uamStations);
+		uamManager.setVehicles(uamReader.getVehicles());
 		UAMQsimModule uamQsimModule = new UAMQsimModule(uamReader,uamManager);
-		uamQsimModule.provideData();
+		//uamQsimModule.provideData();
 
 		// sets transit modules in case of simulating/not pT
 		controler.getConfig().transit().setUseTransit(uamConfigGroup.getPtSimulation());
@@ -227,7 +228,6 @@ public class RunRuhrgebietScenario {
 		controler.addOverridingModule(new DiscreteModeChoiceModule());
 
 
-		VehicleUtils.getDefaultVehicleType();
 		return controler;
 	}
 }
