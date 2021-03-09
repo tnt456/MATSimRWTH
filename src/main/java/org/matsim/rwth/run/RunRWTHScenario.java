@@ -24,6 +24,7 @@ import org.matsim.contribs.discrete_mode_choice.modules.config.DiscreteModeChoic
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryLogging;
@@ -31,6 +32,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.MultimodalNetworkCleaner;
 import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.vehicles.VehicleType;
 import org.matsim.vehicles.VehicleUtils;
 
@@ -48,7 +50,9 @@ public class RunRWTHScenario {
         config = prepareConfig(args);
         scenario = prepareScenario(config);
         Controler controler = prepareControler(scenario);
-        VehicleType a = VehicleUtils.getDefaultVehicleType();
+
+
+
         controler.run();
     }
 
@@ -125,8 +129,8 @@ public class RunRWTHScenario {
     public static Controler prepareControler(Scenario scenario) {
 
         /*scenario.getPopulation().getFactory().getRouteFactories().setRouteFactory(DefaultEnrichedTransitRoute.class,
-                new DefaultEnrichedTransitRouteFactory());*/
-
+                new DefaultEnrichedTransitRouteFactory());
+*/
         Controler controler = new Controler(scenario);
 
 
@@ -152,6 +156,7 @@ public class RunRWTHScenario {
         final UAMStations uamStations = new UAMStations(uamReader.getStations(), network);
         final UAMManager uamManager = new UAMManager(network,uamStations,uamReader.getVehicles());
 
+
         // populate UAMManager
         //uamManager.setStations(uamStations);
         //uamManager.setVehicles(uamReader.getVehicles());
@@ -175,6 +180,7 @@ public class RunRWTHScenario {
         controler.configureQSimComponents(configurator -> {
             UAMQSimModule.activateModes().configure(configurator);
         });
+
 
         if (!controler.getConfig().transit().isUsingTransitInMobsim())
             throw new RuntimeException("Public transit will be teleported and not simulated in the mobsim! "
